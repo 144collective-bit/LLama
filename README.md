@@ -12,9 +12,9 @@ Single-page landing site for SynapseX, a neural-AI interface.
 
 ```bash
 npm install
-npm run dev      # dev server
+npm run dev      # dev server on http://localhost:5180
 npm run build    # type-check + production build
-npm run preview  # serve the production build
+npm run preview  # serve the production build on http://localhost:5181
 ```
 
 ## Structure
