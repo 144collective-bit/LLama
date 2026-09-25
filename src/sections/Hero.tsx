@@ -146,9 +146,7 @@ export function Hero({ entranceComplete }: HeroProps) {
                 transition={{ duration: 0.9, ease: [0.215, 0.61, 0.355, 1], delay: 0.2 }}
                 className="max-w-sm text-[13px] leading-relaxed text-white/60 sm:text-[15px]"
               >
-                Born on PulseChain, raised by the community. {TOKEN.ticker} is a meme coin for
-                everyone who has ever been told to calm down. Ten-second blocks, low fees, zero
-                chill.
+                Born on PulseChain, raised by the community. {TOKEN.ticker}
               </motion.p>
             </div>
 
