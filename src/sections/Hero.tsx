@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ScrambleIn } from '../components/ScrambleIn'
+import { TOKEN } from '../token'
 import { VIDEOS } from '../videos'
 
 interface HeroProps {
@@ -125,7 +126,7 @@ export function Hero({ entranceComplete }: HeroProps) {
               color: 'transparent',
             }}
           >
-            Transcendence
+            PulseChain
           </span>
         </div>
 
@@ -135,9 +136,9 @@ export function Hero({ entranceComplete }: HeroProps) {
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="flex flex-col gap-4">
               <h1 className={headingClass}>
-                <ScrambleIn text="Brain" delay={200} triggered={entranceComplete} />
+                <ScrambleIn text="No Drama" delay={200} triggered={entranceComplete} />
                 <br />
-                <ScrambleIn text="And Body" delay={500} triggered={entranceComplete} />
+                <ScrambleIn text="Just Llama" delay={500} triggered={entranceComplete} />
               </h1>
               <motion.p
                 initial={{ opacity: 0, y: 25 }}
@@ -145,16 +146,16 @@ export function Hero({ entranceComplete }: HeroProps) {
                 transition={{ duration: 0.9, ease: [0.215, 0.61, 0.355, 1], delay: 0.2 }}
                 className="max-w-sm text-[13px] leading-relaxed text-white/60 sm:text-[15px]"
               >
-                Built at the intersection of neuroscience and artificial intelligence. SynapseX
-                continuously maps neural pathways, cognitive load, and physiological states into a
-                single adaptive intelligence layer.
+                Born on PulseChain, raised by the internet. {TOKEN.ticker} is a community meme coin
+                for everyone who has ever been told to calm down. Ten-second blocks, low fees, zero
+                chill.
               </motion.p>
             </div>
 
             <h1 className={`${headingClass} text-left md:text-right`}>
               <ScrambleIn text="One" delay={700} triggered={entranceComplete} />
               <br />
-              <ScrambleIn text="Network" delay={1000} triggered={entranceComplete} />
+              <ScrambleIn text="Herd" delay={1000} triggered={entranceComplete} />
             </h1>
           </div>
         </div>

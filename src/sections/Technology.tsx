@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion'
 import { BackgroundVideo } from '../components/BackgroundVideo'
+import { TOKEN } from '../token'
 import { VIDEOS } from '../videos'
 
 const FEATURES = [
-  { title: 'Cortical Mapping', desc: 'Real-time spatial reconstruction of active neural regions.' },
-  { title: 'Signal Isolation', desc: 'Separates cognitive intent from biological noise.' },
-  { title: 'State Prediction', desc: 'Anticipates cognitive transitions before they occur.' },
-  { title: 'Loop Feedback', desc: 'Closed-loop adjustment based on outcome correlation.' },
+  { title: 'Get a Wallet', desc: 'Install MetaMask or Rabby and add PulseChain as a network.' },
+  { title: 'Grab Some PLS', desc: 'PLS pays for gas. Bridge it over from Ethereum or buy it.' },
+  { title: 'Open PulseX', desc: "Connect your wallet to PulseChain's main exchange." },
+  { title: `Swap for ${TOKEN.ticker}`, desc: 'Paste the contract, pick an amount. Welcome home.' },
 ]
 
 const inView = { once: true, amount: 0.3 }
@@ -25,9 +26,9 @@ export function Technology() {
             transition={{ duration: 1.0 }}
             className="text-[clamp(36px,8vw,72px)] font-light leading-[0.95] tracking-[-0.03em] text-white"
           >
-            Adaptive
+            Join
             <br />
-            Intelligence
+            The Herd
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -36,8 +37,8 @@ export function Technology() {
             transition={{ duration: 1.0, delay: 0.2 }}
             className="max-w-xs text-[13px] leading-relaxed text-white/50 sm:text-[15px] md:pt-2 md:text-right"
           >
-            The system learns your neural baseline within 72 hours. From there, every cognitive
-            state is mapped, predicted, and optimized in real time.
+            Four steps from zero to llama. Already holding PLS? You are one swap away. The full
+            guide is on the How to Buy page.
           </motion.p>
         </div>
 

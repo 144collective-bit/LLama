@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ScrambleText } from './ScrambleText'
 import { SquashHamburger } from './SquashHamburger'
-import { SynapseXLogo } from './SynapseXLogo'
+import { Logo } from './Logo'
+import { navigate, navigateHomeAndScroll } from '../router'
+import { TOKEN } from '../token'
 
 interface NavbarProps {
   entranceComplete: boolean
@@ -14,12 +16,13 @@ const PILL_BG = 'rgba(255,255,255,0.15)'
 const PILL_BG_HOVER = 'rgba(255,255,255,0.22)'
 
 const LINKS = [
-  { label: 'About', top: () => window.innerHeight },
-  { label: 'Metrics', top: () => window.innerHeight * 2 },
+  { label: 'Lore', top: () => window.innerHeight },
+  { label: 'Stats', top: () => window.innerHeight * 2 },
 ]
 
-function scrollToLink(top: () => number) {
-  window.scrollTo({ top: top(), behavior: 'smooth' })
+function goHome(e: React.MouseEvent) {
+  e.preventDefault()
+  navigateHomeAndScroll(() => 0)
 }
 
 function NavLink({
@@ -45,12 +48,15 @@ function NavLink({
   )
 }
 
-function DownloadButton({ mobile }: { mobile: boolean }) {
+function BuyButton({ mobile }: { mobile: boolean }) {
   const [hovered, setHovered] = useState(false)
   return (
     <motion.a
-      href="#"
-      onClick={(e) => e.preventDefault()}
+      href="/buy"
+      onClick={(e) => {
+        e.preventDefault()
+        navigate('/buy')
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{ backgroundColor: '#ffffff' }}
@@ -60,8 +66,8 @@ function DownloadButton({ mobile }: { mobile: boolean }) {
         mobile ? 'h-9 gap-1.5 px-3.5 text-[13px]' : 'h-12 gap-2 px-6 text-[16px]'
       }`}
     >
-      <i className="bi bi-apple" aria-hidden="true" />
-      <ScrambleText text="Download" isHovered={hovered} />
+      <i className="bi bi-lightning-charge-fill" aria-hidden="true" />
+      <ScrambleText text={`Buy ${TOKEN.ticker}`} isHovered={hovered} />
     </motion.a>
   )
 }
@@ -70,7 +76,7 @@ export function Navbar({ entranceComplete }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const go = (top: () => number) => {
-    scrollToLink(top)
+    navigateHomeAndScroll(top)
     setMenuOpen(false)
   }
 
@@ -85,18 +91,15 @@ export function Navbar({ entranceComplete }: NavbarProps) {
       <div className="hidden w-full items-center justify-between sm:flex">
         <div className="flex items-center gap-2">
           <motion.a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-            }}
+            href="/"
+            onClick={goHome}
             style={{ backgroundColor: PILL_BG }}
             whileHover={{ scale: 1.02, backgroundColor: PILL_BG_HOVER }}
             whileTap={{ scale: 0.98 }}
             className={`${menuOpen ? 'hidden md:flex' : 'flex'} h-12 items-center gap-2.5 rounded-[14px] px-5 backdrop-blur-md`}
           >
-            <SynapseXLogo size={18} className="text-white" />
-            <span className="text-[16px] font-medium tracking-tight text-white">SynapseX</span>
+            <Logo size={18} className="text-white" />
+            <span className="text-[16px] font-medium tracking-tight text-white">{TOKEN.name}</span>
           </motion.a>
 
           <motion.nav
@@ -142,18 +145,15 @@ export function Navbar({ entranceComplete }: NavbarProps) {
           </motion.nav>
         </div>
 
-        <DownloadButton mobile={false} />
+        <BuyButton mobile={false} />
       </div>
 
       {/* Mobile */}
       <div className="flex w-full items-center justify-between gap-2 sm:hidden">
         <div className="flex min-w-0 flex-1 items-center">
           <motion.a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-            }}
+            href="/"
+            onClick={goHome}
             initial={false}
             animate={{
               width: menuOpen ? 0 : 'auto',
@@ -165,8 +165,8 @@ export function Navbar({ entranceComplete }: NavbarProps) {
             className="flex h-9 shrink-0 items-center overflow-hidden rounded-[10px] backdrop-blur-md"
           >
             <span className="flex items-center gap-2 whitespace-nowrap px-3.5">
-              <SynapseXLogo size={14} className="text-white" />
-              <span className="text-[13px] font-medium tracking-tight text-white">SynapseX</span>
+              <Logo size={14} className="text-white" />
+              <span className="text-[13px] font-medium tracking-tight text-white">{TOKEN.name}</span>
             </span>
           </motion.a>
 
@@ -213,7 +213,7 @@ export function Navbar({ entranceComplete }: NavbarProps) {
           </motion.nav>
         </div>
 
-        <DownloadButton mobile />
+        <BuyButton mobile />
       </div>
     </motion.header>
   )

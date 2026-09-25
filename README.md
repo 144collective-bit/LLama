@@ -1,6 +1,7 @@
-# SynapseX
+# LLama
 
-Single-page landing site for SynapseX, a neural-AI interface.
+Site for LLama ($LLAMA), a community meme coin on PulseChain: a landing page
+plus a How to Buy page at `/buy`.
 
 ## Stack
 
@@ -21,18 +22,32 @@ npm run preview  # serve the production build on http://localhost:5181
 
 | Path | Purpose |
 | --- | --- |
-| `src/App.tsx` | Entrance timer and section order |
+| `src/token.ts` | **Coin details: contract address, socials, PulseChain settings.** Fill in at launch |
+| `src/App.tsx` | Entrance timer, page switch and section order |
+| `src/router.ts` | Minimal pushState routing for `/` and `/buy` |
+| `src/pages/BuyPage.tsx` | How to Buy: contract card, four steps, network settings |
 | `src/videos.ts` | CloudFront URLs for the five background videos |
 | `src/components/Navbar.tsx` | Fixed navbar: expanding menu pill, desktop and mobile variants |
 | `src/components/ScrambleIn.tsx` | Left-to-right scramble reveal used by the hero headings |
-| `src/components/ScrambleText.tsx` | Hover scramble for nav links and the Download button |
+| `src/components/ScrambleText.tsx` | Hover scramble for nav links and the Buy button |
 | `src/components/SquashHamburger.tsx` | Three-bar hamburger that springs into an X |
-| `src/components/SynapseXLogo.tsx` | Four-fold rotational SVG mark |
+| `src/components/Logo.tsx` | Four-fold rotational SVG mark |
 | `src/sections/Hero.tsx` | Mouse-scrubbed hero video and headline |
 | `src/sections/Cinematic.tsx` | Scroll-driven 3D text over video |
-| `src/sections/*.tsx` | Metrics, Technology, Architecture, Footer |
+| `src/sections/*.tsx` | Stats, How to Buy steps, Roadmap, Footer |
+
+## Before launch
+
+Everything factual about the coin lives in `src/token.ts`. Until it is filled in,
+the site says the contract "drops at launch", hides the Explorer, X and
+Telegram links, and PulseX opens without $LLAMA preselected. The three numbers
+in the stats section (`src/sections/Metrics.tsx`) are PulseChain facts; swap
+them for supply, tax and liquidity once those are set.
 
 ## Notes
+
+- `vercel.json` rewrites every path to `index.html` so `/buy` loads on a
+  refresh or direct link.
 
 - The hero video never plays. Horizontal mouse movement moves its playhead by
   the same fraction of its length (× 0.8). Seeks are chained through the
