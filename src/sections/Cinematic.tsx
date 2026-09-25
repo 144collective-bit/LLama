@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { motion, useMotionTemplate, useScroll, useSpring, useTransform } from 'framer-motion'
 import { BackgroundVideo } from '../components/BackgroundVideo'
+import { TOKEN } from '../token'
 import { VIDEOS } from '../videos'
 
 export function Cinematic() {
@@ -8,7 +9,9 @@ export function Cinematic() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const smooth = useSpring(scrollYProgress, { stiffness: 15, damping: 32, mass: 1.8 })
   const yScaleValue = useTransform(smooth, [0, 1], [60, -120])
-  const opacity = useTransform(smooth, [0.3, 0.5], [0, 1])
+  // The fade tracks scroll directly rather than the slow spring above, so the text is
+  // fully visible by the time it reaches the viewport instead of lagging behind it.
+  const opacity = useTransform(scrollYProgress, [0.1, 0.3], [0, 1])
   const transform = useMotionTemplate`rotateX(24deg) translateY(${yScaleValue}px) translateZ(15px)`
 
   return (
@@ -25,10 +28,9 @@ export function Cinematic() {
             style={{ transform, opacity }}
             className="select-none px-6 text-center font-sans text-[22px] font-normal leading-[1.35] tracking-[-0.02em] text-white sm:px-12 sm:text-[30px] md:text-[36px] lg:text-[42px]"
           >
-            Every chain gets the mascot it deserves. PulseChain got a llama. Calm in a crash,
-            sure-footed on the steepest charts, and famous for spitting at anyone who says it
-            can&apos;t climb. No promises, no drama. Just a herd that holds its ground and a meme
-            that refuses to go quiet.
+            Ignore the noise. Join the herd. All llama, no drama. {TOKEN.ticker} is built for the
+            community and grows with it, one holder at a time on PulseChain. Next, the herd gets a
+            home of its own: LLamaswap.pro launches in spring 2027.
           </motion.p>
         </div>
       </div>
