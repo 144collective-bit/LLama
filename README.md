@@ -22,7 +22,7 @@ npm run preview  # serve the production build on http://localhost:5181
 
 | Path | Purpose |
 | --- | --- |
-| `src/token.ts` | **Coin details: contract address, socials, PulseChain settings.** Fill in at launch |
+| `src/token.ts` | **Coin details: contract address, tax, socials, PulseChain settings** |
 | `src/App.tsx` | Entrance timer, page switch and section order |
 | `src/router.ts` | Minimal pushState routing for `/` and `/buy` |
 | `src/pages/BuyPage.tsx` | How to Buy: contract card, four steps, network settings |
@@ -34,15 +34,16 @@ npm run preview  # serve the production build on http://localhost:5181
 | `src/components/Logo.tsx` | Four-fold rotational SVG mark |
 | `src/sections/Hero.tsx` | Mouse-scrubbed hero video and headline |
 | `src/sections/Cinematic.tsx` | Scroll-driven 3D text over video |
-| `src/sections/*.tsx` | Stats, How to Buy steps, Roadmap, Footer |
+| `src/sections/*.tsx` | Tokenomics, How to Buy steps, Roadmap, Footer |
 
 ## Before launch
 
-Everything factual about the coin lives in `src/token.ts`. Until it is filled in,
-the site says the contract "drops at launch", hides the Explorer, X and
-Telegram links, and PulseX opens without $LLAMA preselected. The three numbers
-in the stats section (`src/sections/Metrics.tsx`) are PulseChain facts; swap
-them for supply, tax and liquidity once those are set.
+Everything factual about the coin lives in `src/token.ts`. The contract address
+there is a **placeholder**: while `live` is `false` the Buy page labels it as
+one, disables its copy button, and PulseX and the explorer are linked without
+it. At launch, paste the real address and set `live: true`.
+
+The X and Telegram buttons in the footer point at `@PulsechainLLama`.
 
 ## Notes
 

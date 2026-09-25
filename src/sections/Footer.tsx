@@ -1,17 +1,18 @@
+import { motion } from 'framer-motion'
 import { BackgroundVideo } from '../components/BackgroundVideo'
 import { Logo } from '../components/Logo'
 import { navigate } from '../router'
-import { PULSECHAIN, TOKEN, pulsexSwapUrl } from '../token'
+import { TOKEN, explorerTokenUrl, pulsexSwapUrl } from '../token'
 import { VIDEOS } from '../videos'
 
+const SOCIALS = [
+  { label: 'X', icon: 'bi-twitter-x', href: TOKEN.social.x },
+  { label: 'Telegram', icon: 'bi-telegram', href: TOKEN.social.telegram },
+]
+
 const EXTERNAL_LINKS = [
-  { label: 'X', href: TOKEN.social.x },
-  { label: 'Telegram', href: TOKEN.social.telegram },
   { label: 'PulseX', href: pulsexSwapUrl() },
-  {
-    label: 'Explorer',
-    href: TOKEN.contractAddress ? `${PULSECHAIN.explorerUrl}/token/${TOKEN.contractAddress}` : '',
-  },
+  { label: 'Explorer', href: explorerTokenUrl() },
 ].filter((link) => link.href)
 
 const linkClass = 'text-white/50 transition-colors hover:text-white'
@@ -36,7 +37,25 @@ export function Footer() {
               The llama of PulseChain. Built by the herd, for the herd. No promises, no drama, just
               a very calm animal and a lot of memes.
             </p>
-            <nav className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[13px]">
+            <div className="mt-8 flex items-center gap-2">
+              {SOCIALS.map((social) => (
+                <motion.a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${TOKEN.name} on ${social.label}`}
+                  style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
+                  whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.22)' }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex h-10 w-10 items-center justify-center rounded-[12px] text-[16px] text-white backdrop-blur-md"
+                >
+                  <i className={`bi ${social.icon}`} aria-hidden="true" />
+                </motion.a>
+              ))}
+              <span className="ml-2 text-[13px] text-white/40">{TOKEN.social.handle}</span>
+            </div>
+            <nav className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[13px]">
               <a
                 href="/buy"
                 onClick={(e) => {

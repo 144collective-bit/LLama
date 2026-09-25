@@ -17,7 +17,7 @@ const PILL_BG_HOVER = 'rgba(255,255,255,0.22)'
 
 const LINKS = [
   { label: 'Lore', top: () => window.innerHeight },
-  { label: 'Stats', top: () => window.innerHeight * 2 },
+  { label: 'Tokenomics', top: () => window.innerHeight * 2 },
 ]
 
 function goHome(e: React.MouseEvent) {

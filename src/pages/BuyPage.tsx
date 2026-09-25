@@ -89,25 +89,39 @@ function ContractCard() {
 
   return (
     <div className="rounded-lg border border-white/10 p-6 text-left">
-      <p className="text-[12px] uppercase tracking-[0.15em] text-white/30">
-        {TOKEN.ticker} contract on {PULSECHAIN.name}
-      </p>
-      {address ? (
-        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <code className="select-all break-all text-[14px] text-white sm:text-[15px]">{address}</code>
-          <button type="button" onClick={copy} className={`${primaryButton} shrink-0`}>
-            <i className={`bi ${copied ? 'bi-check-lg' : 'bi-copy'}`} aria-hidden="true" />
-            {copied ? 'Copied' : 'Copy'}
-          </button>
-        </div>
-      ) : (
-        <p className="mt-4 text-[16px] font-light text-white sm:text-[18px]">
-          Contract address drops at launch.
+      <div className="flex flex-wrap items-center gap-3">
+        <p className="text-[12px] uppercase tracking-[0.15em] text-white/30">
+          {TOKEN.ticker} contract on {PULSECHAIN.name}
         </p>
-      )}
+        {!TOKEN.live && (
+          <span className="rounded-full border border-white/15 px-2.5 py-0.5 text-[11px] uppercase tracking-[0.15em] text-white/50">
+            Placeholder
+          </span>
+        )}
+      </div>
+      <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <code
+          className={`break-all text-[14px] sm:text-[15px] ${
+            TOKEN.live ? 'select-all text-white' : 'select-none text-white/40'
+          }`}
+        >
+          {address}
+        </code>
+        <button
+          type="button"
+          onClick={copy}
+          disabled={!TOKEN.live}
+          title={TOKEN.live ? undefined : 'Available at launch'}
+          className={`${primaryButton} shrink-0 self-start sm:self-auto`}
+        >
+          <i className={`bi ${copied ? 'bi-check-lg' : 'bi-copy'}`} aria-hidden="true" />
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
       <p className="mt-4 text-[12px] leading-relaxed text-white/30">
-        Only trust the address posted here and in the official channels. Copycat tokens with the
-        same name are common.
+        {TOKEN.live
+          ? `Only trust the address posted here and on ${TOKEN.social.handle}. Copycat tokens with the same name are common.`
+          : `Not live yet. The real address drops at launch, here and on ${TOKEN.social.handle}. Anything posted before then is a copycat.`}
       </p>
     </div>
   )
@@ -131,7 +145,7 @@ const STEPS = [
   },
   {
     title: `Swap for ${TOKEN.ticker}`,
-    desc: `Paste the ${TOKEN.ticker} contract address as the token to receive, choose how much ${PULSECHAIN.symbol} to spend and confirm. Welcome to the herd.`,
+    desc: `Paste the ${TOKEN.ticker} contract address as the token to receive, choose how much ${PULSECHAIN.symbol} to spend and confirm. There is no buy or sell tax, so the default slippage is fine. Welcome to the herd.`,
     action: null,
   },
 ]

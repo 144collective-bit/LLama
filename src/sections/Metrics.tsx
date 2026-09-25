@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion'
 import { BackgroundVideo } from '../components/BackgroundVideo'
+import { TOKEN } from '../token'
 import { VIDEOS } from '../videos'
 
-// Once the token launches, swap these for supply, tax and liquidity.
 const METRICS = [
-  { value: '10s', label: 'PulseChain Block Time' },
-  { value: '369', label: 'PulseChain ID' },
+  { value: `${TOKEN.taxPercent}%`, label: 'Buy & Sell Tax' },
+  { value: `${TOKEN.liquidityBurnedPercent}%`, label: 'Liquidity Burned' },
   { value: '0', label: 'Drama Given' },
 ]
 
@@ -23,7 +23,7 @@ export function Metrics() {
             transition={{ duration: 1.2 }}
             className="mb-20 text-center text-[13px] uppercase tracking-[0.2em] text-white/40 sm:text-[14px]"
           >
-            By the Numbers
+            Tokenomics
           </motion.p>
 
           <div className="grid grid-cols-1 gap-16 md:grid-cols-3 md:gap-8">
