@@ -1,6 +1,8 @@
 /** Everything the site says about the coin itself. */
 export const TOKEN = {
   name: 'LLama',
+  /** The llama himself. */
+  mascot: 'Bubby',
   ticker: '$LLAMA',
   /** Placeholder until launch. Paste the real contract here and set `live` to true. */
   contractAddress: '0x11A3A00000000000000000000000000000000000',

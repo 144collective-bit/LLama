@@ -146,7 +146,7 @@ export function Hero({ entranceComplete }: HeroProps) {
                 transition={{ duration: 0.9, ease: [0.215, 0.61, 0.355, 1], delay: 0.2 }}
                 className="max-w-sm text-[13px] leading-relaxed text-white/60 sm:text-[15px]"
               >
-                Born on PulseChain, raised by the community. {TOKEN.ticker}
+                Meet {TOKEN.mascot}. Born on PulseChain, raised by the community. {TOKEN.ticker}
               </motion.p>
             </div>
 
