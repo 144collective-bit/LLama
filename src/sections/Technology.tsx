@@ -3,11 +3,19 @@ import { BackgroundVideo } from '../components/BackgroundVideo'
 import { TOKEN } from '../token'
 import { VIDEOS } from '../videos'
 
-const FEATURES = [
-  { title: 'Get a Wallet', desc: 'Install MetaMask or Rabby and add PulseChain as a network.' },
-  { title: 'Grab Some PLS', desc: 'PLS pays for gas. Bridge it over from Ethereum or buy it.' },
-  { title: 'Open PulseX', desc: "Connect your wallet to PulseChain's main exchange." },
-  { title: `Swap for ${TOKEN.ticker}`, desc: 'Paste the contract, pick an amount. Welcome home.' },
+const SOCIALS = [
+  {
+    title: 'X',
+    icon: 'bi-twitter-x',
+    href: TOKEN.social.x,
+    desc: 'Memes, raids and launch news as it happens.',
+  },
+  {
+    title: 'Telegram',
+    icon: 'bi-telegram',
+    href: TOKEN.social.telegram,
+    desc: 'Chat with the herd and get announcements first.',
+  },
 ]
 
 const inView = { once: true, amount: 0.3 }
@@ -37,8 +45,8 @@ export function Technology() {
             transition={{ duration: 1.0, delay: 0.2 }}
             className="max-w-xs text-[13px] leading-relaxed text-white/50 sm:text-[15px] md:pt-2 md:text-right"
           >
-            Four steps from zero to llama. Already holding PLS? You are one swap away. The full
-            guide is on the How to Buy page.
+            The herd lives online. Follow {TOKEN.social.handle} for memes, raids and the first
+            word on launch.
           </motion.p>
         </div>
 
@@ -51,21 +59,36 @@ export function Technology() {
           transition={{ duration: 1.0, delay: 0.3 }}
           className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-6"
         >
-          {FEATURES.map((feature, i) => (
-            <motion.div
-              key={feature.title}
+          {SOCIALS.map((social, i) => (
+            <motion.a
+              key={social.title}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={inView}
               transition={{ duration: 0.7, delay: i * 0.1 }}
+              className="group block"
             >
-              <h3 className="mb-2 text-[14px] font-normal text-white sm:text-[16px]">
-                {feature.title}
+              <i
+                className={`bi ${social.icon} mb-4 block text-[22px] text-white/70 transition-colors group-hover:text-white`}
+                aria-hidden="true"
+              />
+              <h3 className="mb-2 flex items-center gap-2 text-[14px] font-normal text-white sm:text-[16px]">
+                {social.title}
+                <i
+                  className="bi bi-arrow-up-right text-[12px] text-white/40 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white"
+                  aria-hidden="true"
+                />
               </h3>
               <p className="text-[12px] leading-relaxed text-white/40 sm:text-[14px]">
-                {feature.desc}
+                {social.desc}
               </p>
-            </motion.div>
+              <p className="mt-2 text-[12px] text-white/60 transition-colors group-hover:text-white sm:text-[14px]">
+                {TOKEN.social.handle}
+              </p>
+            </motion.a>
           ))}
         </motion.div>
       </div>

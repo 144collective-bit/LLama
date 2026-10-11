@@ -12,9 +12,9 @@ export const TOKEN = {
   taxPercent: 0,
   liquidityBurnedPercent: 100,
   social: {
-    handle: '@PulsechainLLama',
-    x: 'https://x.com/PulsechainLLama',
-    telegram: 'https://t.me/PulsechainLLama',
+    handle: '@PulseLLama',
+    x: 'https://x.com/PulseLLama',
+    telegram: 'https://t.me/PulseLLama',
   },
 }
 

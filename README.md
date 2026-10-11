@@ -43,7 +43,7 @@ there is a **placeholder**: while `live` is `false` the Buy page labels it as
 one, disables its copy button, and PulseX and the explorer are linked without
 it. At launch, paste the real address and set `live: true`.
 
-The X and Telegram buttons in the footer point at `@PulsechainLLama`.
+The X and Telegram links (footer and the Join The Herd section) point at `@PulseLLama`.
 
 ## Notes
 
