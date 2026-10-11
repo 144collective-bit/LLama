@@ -13,9 +13,9 @@ export const wplsAbi = parseAbi([
 ])
 
 /**
- * Uniswap V2-style router. PulseX forks Uniswap V2; whether its functions say
- * "ETH" or "PLS" for the native coin is detected at runtime (see router.ts),
- * so both spellings are listed.
+ * Uniswap V2-style router. PulseX keeps Uniswap's "ETH" function names for the
+ * native coin (as its own SDK, @pulsex/sdk, calls them) even though the
+ * wrapped-coin getter is WPLS().
  */
 export const routerAbi = parseAbi([
   'function factory() view returns (address)',
@@ -25,6 +25,4 @@ export const routerAbi = parseAbi([
   'function swapExactTokensForTokensSupportingFeeOnTransferTokens(uint256 amountIn, uint256 amountOutMin, address[] path, address to, uint256 deadline)',
   'function swapExactETHForTokensSupportingFeeOnTransferTokens(uint256 amountOutMin, address[] path, address to, uint256 deadline) payable',
   'function swapExactTokensForETHSupportingFeeOnTransferTokens(uint256 amountIn, uint256 amountOutMin, address[] path, address to, uint256 deadline)',
-  'function swapExactPLSForTokensSupportingFeeOnTransferTokens(uint256 amountOutMin, address[] path, address to, uint256 deadline) payable',
-  'function swapExactTokensForPLSSupportingFeeOnTransferTokens(uint256 amountIn, uint256 amountOutMin, address[] path, address to, uint256 deadline)',
 ])

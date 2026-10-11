@@ -2,10 +2,7 @@ import { isAddressEqual, type PublicClient } from 'viem'
 import { routerAbi } from './abi'
 import { NETWORK, type DexRouter } from './network'
 
-export interface CheckedRouter extends DexRouter {
-  /** How the router spells the native coin in its function names. */
-  native: 'ETH' | 'PLS'
-}
+export type CheckedRouter = DexRouter
 
 /**
  * Before any quote or swap, confirm on-chain that each router is a contract,
@@ -28,17 +25,16 @@ export async function checkRouters(client: PublicClient) {
         })
       if (!isAddressEqual(factory, r.factory)) throw new Error(`factory is ${factory}, expected ${r.factory}`)
 
-      let native: CheckedRouter['native'] = 'PLS'
+      // PulseX names the getter WPLS(); plain Uniswap V2 forks call it WETH().
       let wrapped = await client
         .readContract({ address: r.router, abi: routerAbi, functionName: 'WPLS' })
         .catch(() => null)
       if (!wrapped) {
-        native = 'ETH'
         wrapped = await client.readContract({ address: r.router, abi: routerAbi, functionName: 'WETH' })
       }
       if (!isAddressEqual(wrapped, NETWORK.wpls)) throw new Error(`wraps ${wrapped}, expected ${NETWORK.wpls}`)
 
-      ok.push({ ...r, native })
+      ok.push(r)
     } catch (err) {
       problems.push(`${r.name}: ${err instanceof Error ? err.message.split('\n')[0] : String(err)}`)
     }

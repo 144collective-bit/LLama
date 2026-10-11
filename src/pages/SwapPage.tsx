@@ -224,12 +224,16 @@ function Swap() {
       setRefresh((n) => n + 1)
     } catch (err) {
       const rejected = err instanceof BaseError && !!err.walk((e) => e instanceof UserRejectedRequestError)
-      // Failing before the swap was sent means the pre-send simulation refused it,
-      // almost always because the price moved past the slippage limit.
+      // Failing before the swap was sent means the pre-send simulation refused
+      // it. Say so, give the real reason, and only blame slippage when it is.
+      const reason = errorMessage(err)
+      const slippage = /INSUFFICIENT_OUTPUT_AMOUNT/i.test(reason)
       const message =
         rejected || swapSent
-          ? errorMessage(err)
-          : `This swap would fail at the current price, so nothing was sent. The price may have moved more than your ${settings.slippage}% slippage; the quote has been refreshed.`
+          ? reason
+          : slippage
+            ? `The price moved more than your ${settings.slippage}% slippage, so nothing was sent. The quote has been refreshed; try again.`
+            : `This swap would fail, so nothing was sent. Reason: ${reason}`
       setTx({ status: 'error', message })
       setRefresh((n) => n + 1)
     }

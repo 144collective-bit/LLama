@@ -104,16 +104,13 @@ export async function executeSwap({
   onStep('swap')
   const amountOutMin = (quote.amountOut * (10_000n - slippageBps)) / 10_000n
   const deadline = BigInt(Math.floor(Date.now() / 1000) + deadlineMinutes * 60)
-  const plsNames = quote.router.native === 'PLS'
 
   if (!from.address) {
     const { request } = await publicClient.simulateContract({
       account,
       address: router,
       abi: routerAbi,
-      functionName: plsNames
-        ? 'swapExactPLSForTokensSupportingFeeOnTransferTokens'
-        : 'swapExactETHForTokensSupportingFeeOnTransferTokens',
+      functionName: 'swapExactETHForTokensSupportingFeeOnTransferTokens',
       args: [amountOutMin, path, account, deadline],
       value: quote.amountIn,
     })
@@ -126,9 +123,7 @@ export async function executeSwap({
       account,
       address: router,
       abi: routerAbi,
-      functionName: plsNames
-        ? 'swapExactTokensForPLSSupportingFeeOnTransferTokens'
-        : 'swapExactTokensForETHSupportingFeeOnTransferTokens',
+      functionName: 'swapExactTokensForETHSupportingFeeOnTransferTokens',
       args: [quote.amountIn, amountOutMin, path, account, deadline],
     })
     return sent(await walletClient.writeContract({ ...request, chain, gas: await gasFor(request) }), 'swap')
