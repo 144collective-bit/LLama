@@ -1,0 +1,48 @@
+# Builds the site on every push to main and commits the result (the contents
+# of dist/) to the `hostinger` branch, which Hostinger's Git deployment pulls
+# into public_html. Hostinger only copies files, it doesn't build.
+name: Build for Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hostinger
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Commit dist/ to the hostinger branch
+        run: |
+          git fetch origin hostinger
+          git worktree add site origin/hostinger
+          cd site
+          git checkout -B hostinger
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a ../dist/. .
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Built site unchanged; nothing to publish."
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "Build of ${GITHUB_SHA::7}: $(git -C .. log -1 --format=%s)"
+          git push origin hostinger
