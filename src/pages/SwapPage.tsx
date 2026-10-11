@@ -12,7 +12,7 @@ import { checkRouters, type CheckedRouter } from '../swap/router'
 import { SettingsPopover, type SwapSettings } from '../swap/SettingsPopover'
 import { TokenLogo } from '../swap/TokenLogo'
 import { TokenPicker } from '../swap/TokenPicker'
-import { DEFAULT_FROM, DEFAULT_TO, TOKENS, type SwapToken } from '../swap/tokens'
+import { DEFAULT_FROM, DEFAULT_TO, findToken, sameToken, type SwapToken } from '../swap/tokens'
 import { useWalletModal, wagmiConfig } from '../swap/wagmi'
 import { NavWalletButton } from '../swap/WalletButton'
 
@@ -153,7 +153,7 @@ function Swap() {
     }
   }, [amount, decimals])
 
-  const tradable = from.tradable && to.tradable && from.symbol !== to.symbol
+  const tradable = from.tradable && to.tradable && !sameToken(from, to)
 
   // Live quote, debounced while typing.
   useEffect(() => {
@@ -205,10 +205,10 @@ function Swap() {
 
   const selectToken = (token: SwapToken) => {
     if (picker === 'from') {
-      if (token.symbol === to.symbol) setTo(from)
+      if (sameToken(token, to)) setTo(from)
       setFrom(token)
     } else if (picker === 'to') {
-      if (token.symbol === from.symbol) setFrom(to)
+      if (sameToken(token, from)) setFrom(to)
       setTo(token)
     }
     setPicker(null)
@@ -250,7 +250,7 @@ function Swap() {
         rejected || swapSent
           ? reason
           : slippage
-            ? `The price moved more than your ${settings.slippage}% slippage, so nothing was sent. The quote has been refreshed; try again.`
+            ? `You'd receive less than your ${settings.slippage}% slippage allows, so nothing was sent. Either the price moved (the quote has been refreshed; try again) or the token charges a tax on transfers: then raise slippage above that tax in settings.`
             : `This swap would fail, so nothing was sent. Reason: ${reason}`
       setTx({ status: 'error', message })
       setRefresh((n) => n + 1)
@@ -444,7 +444,7 @@ function Swap() {
                       <DetailRow label="Route">
                         {quote.router.name} ·{' '}
                         {quote.path
-                          .map((a) => TOKENS.find((t) => t.address === a)?.symbol ?? short(a))
+                          .map((a) => findToken(a, [from, to])?.symbol ?? short(a))
                           .map((s, i, all) => (i === 0 && !from.address ? 'PLS' : i === all.length - 1 && !to.address ? 'PLS' : s))
                           .join(' → ')}
                       </DetailRow>

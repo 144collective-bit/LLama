@@ -34,7 +34,8 @@ const network: AppKitNetwork = defineChain({
   chainNamespace: 'eip155',
 })
 
-const transports = { [swapChain.id]: http(NETWORK.rpcUrl) }
+// Batched: a quote asks up to 14 routes at once, sent as one request.
+const transports = { [swapChain.id]: http(NETWORK.rpcUrl, { batch: true }) }
 
 const adapter = appKitEnabled
   ? new WagmiAdapter({

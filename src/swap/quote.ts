@@ -2,7 +2,7 @@ import type { Address, PublicClient } from 'viem'
 import { routerAbi } from './abi'
 import { NETWORK } from './network'
 import type { CheckedRouter } from './router'
-import type { SwapToken } from './tokens'
+import { ROUTING_HUBS, type SwapToken } from './tokens'
 
 export type Quote =
   | { kind: 'wrap'; amountIn: bigint; amountOut: bigint }
@@ -35,8 +35,8 @@ async function amountsOut(client: PublicClient, router: Address, amountIn: bigin
 }
 
 /**
- * Live quote: asks every checked router for both the direct path and the
- * path through WPLS, and returns the one that pays out the most. Null when
+ * Live quote: asks every checked router for the direct path and the paths
+ * through the hub tokens, and returns the one that pays out the most. Null when
  * no router has liquidity for the pair.
  */
 export async function getBestQuote(
@@ -56,8 +56,12 @@ export async function getBestQuote(
     return null
   }
 
-  const paths: Address[][] = [[inAddr, outAddr]]
-  if (inAddr !== NETWORK.wpls && outAddr !== NETWORK.wpls) paths.push([inAddr, NETWORK.wpls, outAddr])
+  // Direct, then through one hub token, then through WPLS and PLSX together:
+  // most PulseChain tokens are paired with one of these.
+  const hubs = ROUTING_HUBS.filter((h) => h !== inAddr && h !== outAddr)
+  const paths: Address[][] = [[inAddr, outAddr], ...hubs.map((h) => [inAddr, h, outAddr])]
+  const [wpls, plsx] = ROUTING_HUBS
+  if (plsx && hubs.includes(wpls) && hubs.includes(plsx)) paths.push([inAddr, wpls, plsx, outAddr], [inAddr, plsx, wpls, outAddr])
 
   const candidates = await Promise.all(
     routers.flatMap((router) =>

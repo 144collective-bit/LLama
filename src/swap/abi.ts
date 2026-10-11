@@ -5,6 +5,14 @@ export const erc20Abi = parseAbi([
   'function allowance(address owner, address spender) view returns (uint256)',
   'function approve(address spender, uint256 amount) returns (bool)',
   'function decimals() view returns (uint8)',
+  'function symbol() view returns (string)',
+  'function name() view returns (string)',
+])
+
+/** Old tokens (MKR-style) return their symbol and name as bytes32. */
+export const erc20Bytes32Abi = parseAbi([
+  'function symbol() view returns (bytes32)',
+  'function name() view returns (bytes32)',
 ])
 
 export const wplsAbi = parseAbi([

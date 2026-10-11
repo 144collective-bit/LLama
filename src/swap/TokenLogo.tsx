@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { Logo } from '../components/Logo'
-import { TOKEN } from '../token'
-import type { SwapToken } from './tokens'
+import { LLAMA, sameToken, type SwapToken } from './tokens'
 
 /** The token's logo; the LLama mark for $LLAMA; a coloured initial if there's no logo or it fails to load. */
 export function TokenLogo({ token, size = 28 }: { token: SwapToken; size?: number }) {
   const [failed, setFailed] = useState<string | null>(null)
 
-  if (token.symbol === TOKEN.ticker) {
+  if (sameToken(token, LLAMA)) {
     return (
       <span
         className="flex shrink-0 items-center justify-center rounded-full bg-white text-black"

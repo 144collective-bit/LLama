@@ -121,12 +121,21 @@ $LLAMA appears in the token list as "Not live yet" until `live` is `true` in
 
 ### Token logos
 
-`public/tokens/` holds logos from the Piteas PulseChain token list
-(https://github.com/piteasio/app-tokens, `token-logo/<address>.png`); PLS uses
-the WPLS image, which is the PulseChain mark.
-Each logo belongs to its project and is used only to identify the token. To
-add one, drop the image in `public/tokens/` and set `logo` on the token in
-`src/swap/tokens.ts`; a token without one shows a coloured initial.
+The picker lists every token on the Piteas PulseChain token list
+(https://github.com/piteasio/app-tokens). `src/swap/tokenlist.json` is a
+checked snapshot of it (addresses checksummed, no duplicates), and
+`public/tokens/<address>.webp` holds each token's logo resized to 64 px; PLS
+uses the WPLS image, which is the PulseChain mark. Each logo belongs to its
+project and is used only to identify the token; a token without one shows a
+coloured initial. The main tokens (WPLS, PLSX, HEX, INC, DAI, USDC) are listed
+first and matched by address, because copies with the same symbols exist.
+
+Visitors can trade any other token by pasting its contract address: the
+picker reads its symbol, name and decimals from the chain and shows a warning
+before it can be used. Imported tokens are remembered in that browser only.
+
+Swaps are routed directly or through WPLS, PLSX, HEX or DAI (and WPLS + PLSX
+together), across both PulseX routers, and the best payout wins.
 
 ### Testing on a testnet or local chain
 
