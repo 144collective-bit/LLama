@@ -41,6 +41,22 @@ function rank(token: SwapToken, q: string) {
   return base * 2 + (token.core ? 0 : 1)
 }
 
+/**
+ * Extra warning for a pasted token that copies a listed token's symbol or uses
+ * characters outside plain ASCII (letters that only look like A–Z, 0–9).
+ */
+function lookalikeWarning(token: SwapToken) {
+  const plain = (s: string) => s.toLowerCase().replace('$', '')
+  const listed = TOKENS.find((t) => t.address !== token.address && plain(t.symbol) === plain(token.symbol))
+  if (listed) {
+    return `Same symbol as ${listed.name} (${listed.symbol}), but a different contract. This is a common scam.`
+  }
+  if (/[^\x20-\x7e]/.test(token.symbol + token.name)) {
+    return 'Its name uses unusual characters, which scammers use to imitate other tokens.'
+  }
+  return null
+}
+
 type Lookup =
   | { status: 'idle' }
   | { status: 'loading' }
@@ -151,6 +167,12 @@ export function TokenPicker({ open, selected, onSelect, onClose }: TokenPickerPr
                     <span className="break-all text-[11px] text-white/40">{confirming.address}</span>
                   </span>
                 </div>
+                {lookalikeWarning(confirming) && (
+                  <p className="rounded-[14px] border border-red-400/40 bg-red-400/[0.08] p-3 text-[12px] leading-relaxed text-red-300">
+                    <i className="bi bi-shield-exclamation mr-1.5" aria-hidden="true" />
+                    {lookalikeWarning(confirming)}
+                  </p>
+                )}
                 <p className="rounded-[14px] border border-amber-300/30 bg-amber-300/[0.06] p-3 text-[12px] leading-relaxed text-amber-200">
                   <i className="bi bi-exclamation-triangle mr-1.5" aria-hidden="true" />
                   This token isn't on the token list. Anyone can create a token with any name and logo, including

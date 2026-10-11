@@ -1,7 +1,7 @@
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { defineChain, type AppKitNetwork } from '@reown/appkit/networks'
 import { createAppKit, useAppKit, useDisconnect as useAppKitDisconnect } from '@reown/appkit/react'
-import { ConnectorUtil } from '@reown/appkit-controllers'
+import { ConnectorUtil, OptionsController } from '@reown/appkit-controllers'
 import { useState } from 'react'
 import { createConfig, http, useConnect, useDisconnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -53,6 +53,10 @@ export const wagmiConfig =
   createConfig({ chains: [swapChain], connectors: [injected()], transports })
 
 if (adapter) {
+  // AppKit 1.8 accepts enableBaseAccount below but never applies it, so the
+  // Base Account SDK (and its Coinbase analytics) would load anyway. Set the
+  // option it actually reads before AppKit starts.
+  OptionsController.setEnableBaseAccount(false)
   const origin = typeof window === 'undefined' ? 'https://llamaswap.pro' : window.location.origin
   createAppKit({
     adapters: [adapter],
@@ -67,7 +71,10 @@ if (adapter) {
     },
     featuredWalletIds: FEATURED_WALLETS,
     allWallets: 'HIDE',
+    // Coinbase and Base Account are off: they aren't PulseChain wallets, and the
+    // Base Account SDK sends analytics to Coinbase on every page load.
     enableCoinbase: false,
+    enableBaseAccount: false,
     allowUnsupportedChain: false,
     // Wallets only: no hosted email/social wallets, and none of AppKit's own
     // swap, on-ramp or send screens competing with the site's swap.

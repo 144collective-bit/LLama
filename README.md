@@ -145,6 +145,27 @@ together), across both PulseX routers, and the best payout wins.
 shape as `PULSECHAIN_MAINNET` in `network.ts` (chain id, RPC, WPLS, routers,
 token addresses, `swapsEnabled`). Leave it unset for the real site.
 
+## Security
+
+- **Swaps** are simulated before the wallet is asked to sign, approvals are
+  for the exact amount (never unlimited), the receiver is always the
+  connected wallet, slippage is capped at 50% (warning from 5%), trades over
+  15% price impact are blocked, and a swap is only sent for the quote shown
+  on screen. The PulseX routers are checked on-chain before any quote.
+- **Imported tokens** need an explicit confirmation, with an extra warning
+  when one copies a listed token's symbol or uses look-alike characters.
+- **Headers** (`public/.htaccess`): a Content-Security-Policy allowing scripts
+  only from this site and network calls only to the PulseChain RPC and
+  WalletConnect/Reown; the page can't be framed (clickjacking); HSTS,
+  nosniff, a strict referrer policy and a restrictive Permissions-Policy.
+  If you add a new external service (RPC, API, video host), add it to the
+  policy or the browser will block it.
+- **No third-party code or styles at runtime:** fonts and icons are bundled.
+  Coinbase/Base Account connectors are off (they send analytics to Coinbase).
+- **Build:** the GitHub Action is pinned to exact action commits and installs
+  dependencies with `--ignore-scripts`. `npm audit --omit=dev` is clean; the
+  remaining advisories are in build tools (Vite, Tailwind) only.
+
 ## Notes
 
 - `public/.htaccess` sends every path to `index.html` so `/token` and `/buy`

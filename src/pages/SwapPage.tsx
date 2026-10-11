@@ -220,6 +220,10 @@ function Swap() {
 
   const onSwap = async () => {
     if (!publicClient || !walletClient || !account || !quote) return
+    // Only ever send the quote for what's on screen: same amount, same tokens.
+    const wrapped = (t: SwapToken) => t.address ?? NETWORK.wpls
+    if (quote.amountIn !== amountIn) return
+    if (quote.kind === 'swap' && (quote.path[0] !== wrapped(from) || quote.path[quote.path.length - 1] !== wrapped(to))) return
     setTx({ status: 'pending', step: quote.kind === 'swap' && from.address ? 'approve' : 'swap' })
     let swapSent = false
     try {
