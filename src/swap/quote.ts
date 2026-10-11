@@ -1,66 +1,85 @@
-import { TOKEN } from '../token'
+import type { Address, PublicClient } from 'viem'
+import { routerAbi } from './abi'
+import { NETWORK } from './network'
+import type { CheckedRouter } from './router'
 import type { SwapToken } from './tokens'
 
-export interface Quote {
-  amountOut: number
-  /** Units of `to` per one unit of `from`. */
-  rate: number
-  /** Percent, e.g. 0.42 for 0.42%. */
-  priceImpact: number
-  /** Symbols from input to output. */
-  route: string[]
-  /** Percent taken by liquidity providers. */
-  lpFeePercent: number
-  amountInUsd: number
-  amountOutUsd: number
-}
+export type Quote =
+  | { kind: 'wrap'; amountIn: bigint; amountOut: bigint }
+  | { kind: 'unwrap'; amountIn: bigint; amountOut: bigint }
+  | {
+      kind: 'swap'
+      router: CheckedRouter
+      path: Address[]
+      amountIn: bigint
+      amountOut: bigint
+      /** Percent, or null when it can't be estimated. */
+      priceImpact: number | null
+    }
 
-export interface QuoteRequest {
-  from: SwapToken
-  to: SwapToken
-  amountIn: number
-}
+const wrappedAddress = (t: SwapToken) => t.address ?? NETWORK.wpls
 
-/**
- * MOCK. Every number this returns is made up so the interface has something to
- * show. To go live, replace the body with a call to the LLamaswap (or PulseX)
- * router, e.g. `getAmountsOut(amountIn, path)`, and real USD prices; the page
- * only depends on this signature.
- */
-export async function getQuote({ from, to, amountIn }: QuoteRequest): Promise<Quote> {
-  await new Promise((resolve) => setTimeout(resolve, 300))
-
-  const priceIn = MOCK_USD[from.symbol] ?? 1
-  const priceOut = MOCK_USD[to.symbol] ?? 1
-  const amountInUsd = amountIn * priceIn
-  const priceImpact = Math.min(25, (amountInUsd / MOCK_POOL_USD) * 100)
-  const afterFee = amountInUsd * (1 - MOCK_LP_FEE_PERCENT / 100)
-  const amountOutUsd = afterFee * (1 - priceImpact / 100)
-  const amountOut = amountOutUsd / priceOut
-
-  const usesWrapped = from.address !== null && to.address !== null && from.symbol !== 'WPLS' && to.symbol !== 'WPLS'
-
-  return {
-    amountOut,
-    rate: priceIn / priceOut,
-    priceImpact,
-    route: usesWrapped ? [from.symbol, 'WPLS', to.symbol] : [from.symbol, to.symbol],
-    lpFeePercent: MOCK_LP_FEE_PERCENT,
-    amountInUsd,
-    amountOutUsd,
+async function amountsOut(client: PublicClient, router: Address, amountIn: bigint, path: Address[]) {
+  try {
+    const amounts = await client.readContract({
+      address: router,
+      abi: routerAbi,
+      functionName: 'getAmountsOut',
+      args: [amountIn, path],
+    })
+    return amounts[amounts.length - 1]
+  } catch {
+    // No pair (or no liquidity) for this path on this router.
+    return null
   }
 }
 
-const MOCK_LP_FEE_PERCENT = 0.29
-const MOCK_POOL_USD = 250_000
+/**
+ * Live quote: asks every checked router for both the direct path and the
+ * path through WPLS, and returns the one that pays out the most. Null when
+ * no router has liquidity for the pair.
+ */
+export async function getBestQuote(
+  client: PublicClient,
+  routers: CheckedRouter[],
+  from: SwapToken,
+  to: SwapToken,
+  amountIn: bigint,
+): Promise<Quote | null> {
+  const inAddr = wrappedAddress(from)
+  const outAddr = wrappedAddress(to)
 
-const MOCK_USD: Record<string, number> = {
-  PLS: 0.00004,
-  WPLS: 0.00004,
-  [TOKEN.ticker]: 0.000002,
-  PLSX: 0.00002,
-  HEX: 0.004,
-  INC: 0.8,
-  DAI: 1,
-  USDC: 1,
+  if (inAddr === outAddr) {
+    // PLS ⇄ WPLS is a 1:1 wrap on the WPLS contract, not a trade.
+    if (from.address === null && to.address === NETWORK.wpls) return { kind: 'wrap', amountIn, amountOut: amountIn }
+    if (from.address === NETWORK.wpls && to.address === null) return { kind: 'unwrap', amountIn, amountOut: amountIn }
+    return null
+  }
+
+  const paths: Address[][] = [[inAddr, outAddr]]
+  if (inAddr !== NETWORK.wpls && outAddr !== NETWORK.wpls) paths.push([inAddr, NETWORK.wpls, outAddr])
+
+  const candidates = await Promise.all(
+    routers.flatMap((router) =>
+      paths.map(async (path) => ({ router, path, amountOut: await amountsOut(client, router.router, amountIn, path) })),
+    ),
+  )
+  const best = candidates
+    .filter((c): c is typeof c & { amountOut: bigint } => c.amountOut !== null && c.amountOut > 0n)
+    .sort((a, b) => (b.amountOut > a.amountOut ? 1 : b.amountOut < a.amountOut ? -1 : 0))[0]
+  if (!best) return null
+
+  // Price impact: compare the rate for this trade with the rate for a trade
+  // 1/10,000th its size, which barely moves the pool.
+  let priceImpact: number | null = null
+  const smallIn = amountIn / 10_000n
+  if (smallIn > 0n) {
+    const smallOut = await amountsOut(client, best.router.router, smallIn, best.path)
+    if (smallOut && smallOut > 0n) {
+      const ratio = (Number(best.amountOut) * Number(smallIn)) / (Number(amountIn) * Number(smallOut))
+      priceImpact = Math.max(0, (1 - ratio) * 100)
+    }
+  }
+
+  return { kind: 'swap', router: best.router, path: best.path, amountIn, amountOut: best.amountOut, priceImpact }
 }

@@ -15,8 +15,7 @@ const POPULAR = ['PLS', TOKEN.ticker, 'PLSX', 'HEX']
 
 function shortAddress(token: SwapToken) {
   if (token.address === null) return 'Native'
-  if (token.symbol === TOKEN.ticker && !TOKEN.live) return 'Not live yet'
-  if (!token.address) return 'Address TBA'
+  if (!token.tradable) return 'Not live yet'
   return `${token.address.slice(0, 6)}…${token.address.slice(-4)}`
 }
 

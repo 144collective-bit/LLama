@@ -5,12 +5,6 @@ export function formatAmount(value: number) {
   return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 6 }).format(value)
 }
 
-export function formatUsd(value: number) {
-  if (!Number.isFinite(value) || value === 0) return '$0.00'
-  if (value < 0.01) return '<$0.01'
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
-}
-
 /**
  * Keep digits and a single decimal point. Commas are thousands separators
  * ("1,000,000"), except a lone comma with no dot, which is a decimal ("0,5").

@@ -9,10 +9,13 @@
     "preview": "vite preview --host"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.104.1",
     "framer-motion": "^12.40.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "viem": "^2.57.4",
+    "wagmi": "^3.7.7"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
