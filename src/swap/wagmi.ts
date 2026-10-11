@@ -15,10 +15,17 @@ const PROJECT_ID = (import.meta.env.VITE_REOWN_PROJECT_ID as string | undefined)
 
 export const appKitEnabled = PROJECT_ID.length > 0
 
-/** WalletConnect directory IDs, as listed in AppKit's own presets. */
+/**
+ * The wallets the connect menu lists, in this order (WalletConnect directory
+ * IDs, from the directory at api.web3modal.org). Wallets already installed in
+ * the visitor's browser (Rabby, …) are shown as well; the "All wallets" list
+ * is hidden. Four is AppKit's cap, so it adds no "recommended" wallets.
+ */
 const FEATURED_WALLETS = [
   'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
   '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
+  '971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709', // OKX Wallet
+  'dd43441a6368ec9046540c46c5fdc58f79926d17ce61a176444568ca7c970dcd', // Internet Money (phone app)
 ]
 
 const network: AppKitNetwork = defineChain({
@@ -57,6 +64,7 @@ if (adapter) {
       icons: [`${origin}/llamaswap-icon.png`],
     },
     featuredWalletIds: FEATURED_WALLETS,
+    allWallets: 'HIDE',
     enableCoinbase: false,
     allowUnsupportedChain: false,
     // Wallets only: no hosted email/social wallets, and none of AppKit's own

@@ -77,16 +77,18 @@ through PulseX's contracts. The site never holds funds.
 "Connect wallet" opens Reown AppKit (`src/swap/wagmi.ts`): browser extensions
 are detected automatically (Rabby, MetaMask, Internet Money, Trust, …), and
 WalletConnect covers phones: a QR code on desktop, one-tap links into wallet
-apps on mobile. MetaMask and Trust are pinned at the top. Email/social
-logins, AppKit's own swap/on-ramp/send screens and analytics are switched off.
+apps on mobile. The menu lists MetaMask, Trust Wallet, OKX Wallet and
+Internet Money, plus any wallet already installed in the visitor's browser
+(e.g. Rabby); AppKit's "All wallets" list is hidden. Email/social logins,
+AppKit's own swap/on-ramp/send screens and analytics are switched off.
 
 - **Project ID:** `b630de806fe35c2ba6e6a52d321e0130` (public by design),
   overridable with `VITE_REOWN_PROJECT_ID`; set it to an empty string to fall
   back to browser-extension wallets only.
 - **Allowed domains:** WalletConnect only works on domains listed for the
   project at https://dashboard.reown.com (llamaswap.pro, www.llamaswap.pro).
-- **Pin more wallets:** add their WalletConnect directory IDs to
-  `FEATURED_WALLETS` in `src/swap/wagmi.ts`.
+- **Change the listed wallets:** edit the WalletConnect directory IDs in
+  `FEATURED_WALLETS` in `src/swap/wagmi.ts`. AppKit shows at most four.
 - The wallet code is heavy (~520 KB compressed), so the swap page loads it as
   its own chunk; the token and How to Buy pages never download it.
 - `.npmrc` sets `legacy-peer-deps`: optional add-ons of wagmi pull in
