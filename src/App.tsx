@@ -18,11 +18,11 @@ const SwapPage = lazy(() => import('./pages/SwapPage'))
 /** Holds the swap's space while its code loads, so nothing jumps. */
 function SwapFallback() {
   return (
-    <section className="min-h-screen w-full bg-black px-4 pb-32 pt-32 sm:px-6 sm:pt-40">
+    <section className="min-h-screen w-full bg-black px-4 pb-32 pt-24 sm:px-6 sm:pt-40">
       <div className="mx-auto w-full max-w-md text-center">
-        <p className="mb-6 text-[13px] uppercase tracking-[0.2em] text-white/40 sm:text-[14px]">LLamaswap.pro</p>
+        <p className="mb-4 text-[13px] uppercase tracking-[0.2em] text-white/40 sm:mb-6 sm:text-[14px]">LLamaswap.pro</p>
         <h1 className="text-[clamp(28px,6vw,48px)] font-light leading-[1.15] tracking-[-0.02em] text-white">Swap. No drama.</h1>
-        <div className="mt-[72px] h-[420px] animate-pulse rounded-[24px] border border-white/10 bg-white/[0.03]" />
+        <div className="mt-[66px] h-[420px] animate-pulse sm:mt-[91px] rounded-[24px] border border-white/10 bg-white/[0.03]" />
       </div>
     </section>
   )

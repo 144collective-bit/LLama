@@ -297,7 +297,7 @@ function Swap() {
   else button = { label: quote.kind === 'wrap' ? 'Wrap' : quote.kind === 'unwrap' ? 'Unwrap' : 'Swap', onClick: onSwap }
 
   return (
-    <section className="relative min-h-screen w-full bg-black px-4 pb-32 pt-32 sm:px-6 sm:pt-40">
+    <section className="relative min-h-screen w-full bg-black px-4 pb-32 pt-24 sm:px-6 sm:pt-40">
       <div className="mx-auto w-full max-w-md">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -305,13 +305,13 @@ function Swap() {
           transition={{ duration: 1.0 }}
           className="text-center"
         >
-          <p className="mb-6 text-[13px] uppercase tracking-[0.2em] text-white/40 sm:text-[14px]">
+          <p className="mb-4 text-[13px] uppercase tracking-[0.2em] text-white/40 sm:mb-6 sm:text-[14px]">
             LLamaswap.pro
           </p>
           <h1 className="text-[clamp(28px,6vw,48px)] font-light leading-[1.15] tracking-[-0.02em] text-white">
             Swap. No drama.
           </h1>
-          <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-[11px] uppercase tracking-[0.15em] text-white/50">
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full sm:mt-6 border border-white/15 px-3 py-1 text-[11px] uppercase tracking-[0.15em] text-white/50">
             <span className={`h-1.5 w-1.5 rounded-full ${NETWORK.swapsEnabled ? 'bg-emerald-400' : 'bg-amber-300'}`} />
             {NETWORK.swapsEnabled ? 'Routed through PulseX liquidity' : 'Swaps launching soon'}
           </p>
@@ -321,7 +321,7 @@ function Swap() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-10 rounded-[24px] border border-white/10 bg-white/[0.03] p-2 backdrop-blur-md"
+          className="mt-6 rounded-[24px] border border-white/10 bg-white/[0.03] p-2 backdrop-blur-md sm:mt-10"
         >
           <div className="relative flex items-center justify-between gap-2 px-3 pb-2 pt-2">
             <h2 className="text-[15px] text-white">Swap</h2>
