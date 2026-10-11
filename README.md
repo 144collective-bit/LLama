@@ -1,7 +1,12 @@
 # LLama
 
-Site for LLama ($LLAMA), a community meme coin on PulseChain: a landing page
-plus a How to Buy page at `/buy`.
+Site for LLama ($LLAMA), a community meme coin on PulseChain.
+
+| URL | Page |
+| --- | --- |
+| `/` | LLamaswap.pro swap preview (the opening page; `/swap` also works) |
+| `/token` | The $LLAMA landing page: hero, lore, tokenomics, socials, roadmap |
+| `/buy` | How to Buy |
 
 ## Stack
 
@@ -24,9 +29,9 @@ npm run preview  # serve the production build on http://localhost:5181
 | --- | --- |
 | `src/token.ts` | **Coin details: contract address, tax, socials, PulseChain settings** |
 | `src/App.tsx` | Entrance timer, page switch and section order |
-| `src/router.ts` | Minimal pushState routing for `/` and `/buy` |
+| `src/router.ts` | Minimal pushState routing; `ROUTES` lists the page URLs |
 | `src/pages/BuyPage.tsx` | How to Buy: contract card, four steps, network settings |
-| `src/pages/SwapPage.tsx` | LLamaswap.pro swap preview at `/swap` (not connected) |
+| `src/pages/SwapPage.tsx` | LLamaswap.pro swap preview at `/` (not connected) |
 | `src/swap/` | Swap token list, quote function, token picker, settings popover |
 | `src/videos.ts` | CloudFront URLs for the five background videos |
 | `src/components/Navbar.tsx` | Fixed navbar: expanding menu pill, desktop and mobile variants |
@@ -49,7 +54,7 @@ The X and Telegram links (footer and the Join The Herd section) point at `@Pulse
 
 ## Connecting the swap
 
-`/swap` is a working interface with no wallet or chain behind it. To go live:
+The swap page is a working interface with no wallet or chain behind it. To go live:
 
 1. **Quotes:** replace the body of `getQuote` in `src/swap/quote.ts` with a
    router call (e.g. `getAmountsOut`) and real USD prices. The page only
@@ -63,8 +68,8 @@ The X and Telegram links (footer and the Join The Herd section) point at `@Pulse
 
 ## Notes
 
-- `vercel.json` rewrites every path to `index.html` so `/buy` loads on a
-  refresh or direct link.
+- `vercel.json` rewrites every path to `index.html` so `/token` and `/buy`
+  load on a refresh or direct link.
 
 - The hero video never plays. Horizontal mouse movement moves its playhead by
   the same fraction of its length (× 0.8). Seeks are chained through the

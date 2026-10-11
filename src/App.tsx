@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Navbar } from './components/Navbar'
 import { BuyPage } from './pages/BuyPage'
 import { SwapPage } from './pages/SwapPage'
-import { usePathname } from './router'
+import { ROUTES, usePathname } from './router'
 import { Architecture } from './sections/Architecture'
 import { Cinematic } from './sections/Cinematic'
 import { Footer } from './sections/Footer'
@@ -13,16 +13,26 @@ import { TOKEN } from './token'
 
 const ENTRANCE_DELAY_MS = 800
 
-const TITLES: Record<string, string> = {
-  '/': `${TOKEN.name} (${TOKEN.ticker}) — No Drama, Just Llama`,
-  '/buy': `How to Buy ${TOKEN.ticker} — ${TOKEN.name}`,
-  '/swap': 'LLamaswap.pro — Swap Preview',
+type Page = 'swap' | 'token' | 'buy'
+
+const TITLES: Record<Page, string> = {
+  swap: 'LLamaswap.pro — Swap Preview',
+  token: `${TOKEN.name} (${TOKEN.ticker}) — No Drama, Just Llama`,
+  buy: `How to Buy ${TOKEN.ticker} — ${TOKEN.name}`,
+}
+
+/** `/swap` stays as an alias of the home page so earlier links keep working. */
+function pageFor(pathname: string): Page {
+  const path = pathname.replace(/\/+$/, '') || '/'
+  if (path === ROUTES.token) return 'token'
+  if (path === ROUTES.buy) return 'buy'
+  return 'swap'
 }
 
 export default function App() {
   const [entranceComplete, setEntranceComplete] = useState(false)
   const pathname = usePathname()
-  const page = pathname === '/buy' || pathname === '/swap' ? pathname : '/'
+  const page = pageFor(pathname)
 
   useEffect(() => {
     const timeout = setTimeout(() => setEntranceComplete(true), ENTRANCE_DELAY_MS)
@@ -40,9 +50,9 @@ export default function App() {
     >
       <Navbar entranceComplete={entranceComplete} />
       <main>
-        {page === '/buy' ? (
+        {page === 'buy' ? (
           <BuyPage />
-        ) : page === '/swap' ? (
+        ) : page === 'swap' ? (
           <SwapPage />
         ) : (
           <>

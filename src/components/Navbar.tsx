@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ScrambleText } from './ScrambleText'
 import { SquashHamburger } from './SquashHamburger'
 import { Logo } from './Logo'
-import { navigate, navigateHomeAndScroll } from '../router'
+import { ROUTES, navigate, navigateAndScroll } from '../router'
 import { TOKEN } from '../token'
 
 interface NavbarProps {
@@ -15,17 +15,18 @@ const spring = { type: 'spring', stiffness: 350, damping: 28 } as const
 const PILL_BG = 'rgba(255,255,255,0.15)'
 const PILL_BG_HOVER = 'rgba(255,255,255,0.22)'
 
-type NavTarget = { top: () => number } | { path: string }
+/** A page, optionally scrolled to a section on it. */
+type NavTarget = { path: string; top?: () => number }
 
 const LINKS: { label: string; target: NavTarget }[] = [
-  { label: 'Lore', target: { top: () => window.innerHeight } },
-  { label: 'Tokenomics', target: { top: () => window.innerHeight * 2 } },
-  { label: 'Swap', target: { path: '/swap' } },
+  { label: 'Swap', target: { path: ROUTES.swap } },
+  { label: 'Token', target: { path: ROUTES.token } },
+  { label: 'Tokenomics', target: { path: ROUTES.token, top: () => window.innerHeight * 2 } },
 ]
 
 function goHome(e: React.MouseEvent) {
   e.preventDefault()
-  navigateHomeAndScroll(() => 0)
+  navigateAndScroll(ROUTES.swap, () => 0)
 }
 
 function NavLink({
@@ -58,7 +59,7 @@ function BuyButton({ mobile }: { mobile: boolean }) {
       href="/buy"
       onClick={(e) => {
         e.preventDefault()
-        navigate('/buy')
+        navigate(ROUTES.buy)
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -79,8 +80,8 @@ export function Navbar({ entranceComplete }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const go = (target: NavTarget) => {
-    if ('path' in target) navigate(target.path)
-    else navigateHomeAndScroll(target.top)
+    if (target.top) navigateAndScroll(target.path, target.top)
+    else navigate(target.path)
     setMenuOpen(false)
   }
 
@@ -201,7 +202,7 @@ export function Navbar({ entranceComplete }: NavbarProps) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 15 }}
                   transition={{ duration: 0.25 }}
-                  className="ml-3 flex items-center gap-3.5"
+                  className="ml-3 flex items-center gap-3.5 max-[380px]:gap-2.5"
                 >
                   {LINKS.map((link) => (
                     <NavLink

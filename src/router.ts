@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react'
 
 /**
- * Just enough routing for a landing page and a couple of subpages: the path
- * lives in the URL, links push history, and back/forward re-render.
+ * Just enough routing for a handful of pages: the path lives in the URL,
+ * links push history, and back/forward re-render.
  */
+
+/** The swap is the opening page; the token's landing page has its own URL. */
+export const ROUTES = {
+  swap: '/',
+  token: '/token',
+  buy: '/buy',
+} as const
 export function navigate(path: string) {
   if (path !== window.location.pathname) {
     window.history.pushState(null, '', path)
@@ -12,14 +19,14 @@ export function navigate(path: string) {
   window.scrollTo(0, 0)
 }
 
-/** Go to the home page (if not already there), then smooth-scroll to `top`. */
-export function navigateHomeAndScroll(top: () => number) {
-  if (window.location.pathname === '/') {
+/** Go to `path` (if not already there), then smooth-scroll to `top`. */
+export function navigateAndScroll(path: string, top: () => number) {
+  if (window.location.pathname === path) {
     window.scrollTo({ top: top(), behavior: 'smooth' })
     return
   }
-  navigate('/')
-  // Wait for the home page to render and lay out before measuring.
+  navigate(path)
+  // Wait for the page to render and lay out before measuring.
   requestAnimationFrame(() =>
     requestAnimationFrame(() => window.scrollTo({ top: top(), behavior: 'smooth' })),
   )
