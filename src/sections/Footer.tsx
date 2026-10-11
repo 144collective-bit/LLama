@@ -34,8 +34,8 @@ export function Footer() {
               </span>
             </div>
             <p className="max-w-sm text-[14px] leading-relaxed text-white/40 sm:text-[15px]">
-              {TOKEN.mascot}, the llama of PulseChain. Built by the herd, for the herd. No promises,
-              no drama, just a very calm animal and a lot of memes.
+              Meet {TOKEN.mascot}. Built by the herd, for the herd. No promises, no drama, just a
+              very calm llama and a lot of memes.
             </p>
             <div className="mt-8 flex items-center gap-2">
               {SOCIALS.map((social) => (
