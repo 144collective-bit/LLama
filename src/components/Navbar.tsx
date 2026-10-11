@@ -15,9 +15,12 @@ const spring = { type: 'spring', stiffness: 350, damping: 28 } as const
 const PILL_BG = 'rgba(255,255,255,0.15)'
 const PILL_BG_HOVER = 'rgba(255,255,255,0.22)'
 
-const LINKS = [
-  { label: 'Lore', top: () => window.innerHeight },
-  { label: 'Tokenomics', top: () => window.innerHeight * 2 },
+type NavTarget = { top: () => number } | { path: string }
+
+const LINKS: { label: string; target: NavTarget }[] = [
+  { label: 'Lore', target: { top: () => window.innerHeight } },
+  { label: 'Tokenomics', target: { top: () => window.innerHeight * 2 } },
+  { label: 'Swap', target: { path: '/swap' } },
 ]
 
 function goHome(e: React.MouseEvent) {
@@ -75,8 +78,9 @@ function BuyButton({ mobile }: { mobile: boolean }) {
 export function Navbar({ entranceComplete }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const go = (top: () => number) => {
-    navigateHomeAndScroll(top)
+  const go = (target: NavTarget) => {
+    if ('path' in target) navigate(target.path)
+    else navigateHomeAndScroll(target.top)
     setMenuOpen(false)
   }
 
@@ -104,7 +108,7 @@ export function Navbar({ entranceComplete }: NavbarProps) {
 
           <motion.nav
             initial={false}
-            animate={{ width: menuOpen ? 290 : 48 }}
+            animate={{ width: menuOpen ? 320 : 48 }}
             transition={spring}
             style={{ backgroundColor: PILL_BG }}
             className="flex h-12 items-center overflow-hidden rounded-[14px] backdrop-blur-md"
@@ -135,7 +139,7 @@ export function Navbar({ entranceComplete }: NavbarProps) {
                     <NavLink
                       key={link.label}
                       label={link.label}
-                      onClick={() => go(link.top)}
+                      onClick={() => go(link.target)}
                       className="text-[16px]"
                     />
                   ))}
@@ -197,14 +201,14 @@ export function Navbar({ entranceComplete }: NavbarProps) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 15 }}
                   transition={{ duration: 0.25 }}
-                  className="ml-4 flex items-center gap-5"
+                  className="ml-3 flex items-center gap-3.5"
                 >
                   {LINKS.map((link) => (
                     <NavLink
                       key={link.label}
                       label={link.label}
-                      onClick={() => go(link.top)}
-                      className="text-[13px]"
+                      onClick={() => go(link.target)}
+                      className="text-[13px] max-[380px]:text-[12px]"
                     />
                   ))}
                 </motion.div>
