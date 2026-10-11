@@ -244,9 +244,8 @@ function Swap() {
 
   // The one action the button offers right now, in order of what's blocking.
   let button: { label: string; onClick?: () => void; disabled?: boolean }
-  if (!NETWORK.swapsEnabled) button = { label: 'Swaps not enabled yet', disabled: true }
-  else if (!from.tradable || !to.tradable) button = { label: `${!from.tradable ? from.symbol : to.symbol} isn't live yet`, disabled: true }
-  else if (!isConnected)
+  // Connecting and switching network always work; only trading waits on the checks below.
+  if (!isConnected)
     button = { label: wallet.connecting ? 'Connecting…' : 'Connect wallet', onClick: wallet.open, disabled: wallet.connecting }
   else if (wrongChain)
     button = {
@@ -254,6 +253,8 @@ function Swap() {
       onClick: () => switchChain({ chainId: swapChain.id }, { onError: (err) => setWalletNotice(errorMessage(err)) }),
       disabled: switching,
     }
+  else if (!NETWORK.swapsEnabled) button = { label: 'Swaps not enabled yet', disabled: true }
+  else if (!from.tradable || !to.tradable) button = { label: `${!from.tradable ? from.symbol : to.symbol} isn't live yet`, disabled: true }
   else if (routerBlocked) button = { label: 'PulseX check failed', disabled: true }
   else if (!routers) button = { label: 'Checking PulseX…', disabled: true }
   else if (!amountIn) button = { label: 'Enter an amount', disabled: true }
