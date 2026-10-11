@@ -84,8 +84,7 @@ logins, AppKit's own swap/on-ramp/send screens and analytics are switched off.
   overridable with `VITE_REOWN_PROJECT_ID`; set it to an empty string to fall
   back to browser-extension wallets only.
 - **Allowed domains:** WalletConnect only works on domains listed for the
-  project at https://dashboard.reown.com (llamaswap.pro, www.llamaswap.pro,
-  the Vercel address).
+  project at https://dashboard.reown.com (llamaswap.pro, www.llamaswap.pro).
 - **Pin more wallets:** add their WalletConnect directory IDs to
   `FEATURED_WALLETS` in `src/swap/wagmi.ts`.
 - The wallet code is heavy (~520 KB compressed), so the swap page loads it as
@@ -135,9 +134,8 @@ token addresses, `swapsEnabled`). Leave it unset for the real site.
 
 ## Notes
 
-- `vercel.json` (Vercel) and `public/.htaccess` (Hostinger and other
-  Apache/LiteSpeed hosts) send every path to `index.html` so `/token` and
-  `/buy` load on a refresh or direct link. The site has to be built
+- `public/.htaccess` sends every path to `index.html` so `/token` and `/buy`
+  load on a refresh or direct link (Hostinger runs LiteSpeed, which reads it). The site has to be built
   (`npm run build`); the host serves the contents of `dist/`, not the source.
 - Hostinger deploys from the `hostinger` branch, which holds only the built
   site. `.github/workflows/hostinger.yml` rebuilds it on every push to `main`

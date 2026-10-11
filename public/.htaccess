@@ -1,4 +1,4 @@
-# Hostinger (Apache/LiteSpeed) equivalent of vercel.json.
+# Read by Hostinger's LiteSpeed server (and any Apache-compatible host).
 
 # Single-page app: any path that isn't a real file goes to index.html, so
 # links like /token and /buy work when opened directly.
