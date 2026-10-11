@@ -96,6 +96,15 @@ Then make one **small** swap yourself before telling anyone.
 $LLAMA appears in the token list as "Not live yet" until `live` is `true` in
 `src/token.ts` (with the real contract address).
 
+### Token logos
+
+`public/tokens/` holds logos from the Piteas PulseChain token list
+(https://github.com/piteasio/app-tokens, `token-logo/<address>.png`); PLS uses
+the WPLS image, which is the PulseChain mark.
+Each logo belongs to its project and is used only to identify the token. To
+add one, drop the image in `public/tokens/` and set `logo` on the token in
+`src/swap/tokens.ts`; a token without one shows a coloured initial.
+
 ### Testing on a testnet or local chain
 
 `VITE_SWAP_NETWORK` replaces the whole network config with JSON of the same

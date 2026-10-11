@@ -11,7 +11,9 @@ export interface SwapToken {
   decimals: number
   /** False while the token can't be traded yet ($LLAMA before launch). */
   tradable: boolean
-  /** Accent for the placeholder logo until real token logos are added. */
+  /** Path under public/ (see public/tokens/README.md). */
+  logo?: string
+  /** Fallback letter colour if the logo is missing or fails to load. */
   color: string
 }
 
@@ -34,7 +36,7 @@ function address(symbol: string): Address {
 }
 
 export const TOKENS: SwapToken[] = [
-  { symbol: 'PLS', name: 'Pulse', address: null, decimals: 18, tradable: true, color: '#a855f7' },
+  { symbol: 'PLS', name: 'Pulse', address: null, decimals: 18, tradable: true, logo: '/tokens/wpls.png', color: '#a855f7' },
   {
     symbol: TOKEN.ticker,
     name: TOKEN.name,
@@ -43,12 +45,12 @@ export const TOKENS: SwapToken[] = [
     tradable: TOKEN.live || TOKEN.ticker in NETWORK.tokens,
     color: '#ffffff',
   },
-  { symbol: 'WPLS', name: 'Wrapped Pulse', address: NETWORK.wpls, decimals: 18, tradable: true, color: '#7c3aed' },
-  { symbol: 'PLSX', name: 'PulseX', address: address('PLSX'), decimals: 18, tradable: true, color: '#22d3ee' },
-  { symbol: 'HEX', name: 'HEX', address: address('HEX'), decimals: 8, tradable: true, color: '#f97316' },
-  { symbol: 'INC', name: 'Incentive', address: address('INC'), decimals: 18, tradable: true, color: '#84cc16' },
-  { symbol: 'DAI', name: 'Dai from Ethereum', address: address('DAI'), decimals: 18, tradable: true, color: '#facc15' },
-  { symbol: 'USDC', name: 'USD Coin from Ethereum', address: address('USDC'), decimals: 6, tradable: true, color: '#3b82f6' },
+  { symbol: 'WPLS', name: 'Wrapped Pulse', address: NETWORK.wpls, decimals: 18, tradable: true, logo: '/tokens/wpls.png', color: '#7c3aed' },
+  { symbol: 'PLSX', name: 'PulseX', address: address('PLSX'), decimals: 18, tradable: true, logo: '/tokens/plsx.png', color: '#22d3ee' },
+  { symbol: 'HEX', name: 'HEX', address: address('HEX'), decimals: 8, tradable: true, logo: '/tokens/hex.png', color: '#f97316' },
+  { symbol: 'INC', name: 'Incentive', address: address('INC'), decimals: 18, tradable: true, logo: '/tokens/inc.png', color: '#84cc16' },
+  { symbol: 'DAI', name: 'Dai from Ethereum', address: address('DAI'), decimals: 18, tradable: true, logo: '/tokens/dai.png', color: '#facc15' },
+  { symbol: 'USDC', name: 'USD Coin from Ethereum', address: address('USDC'), decimals: 6, tradable: true, logo: '/tokens/usdc.png', color: '#3b82f6' },
 ]
 
 const bySymbol = (s: string) => TOKENS.find((t) => t.symbol === s)!
