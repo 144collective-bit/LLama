@@ -135,8 +135,10 @@ token addresses, `swapsEnabled`). Leave it unset for the real site.
 
 ## Notes
 
-- `vercel.json` rewrites every path to `index.html` so `/token` and `/buy`
-  load on a refresh or direct link.
+- `vercel.json` (Vercel) and `public/.htaccess` (Hostinger and other
+  Apache/LiteSpeed hosts) send every path to `index.html` so `/token` and
+  `/buy` load on a refresh or direct link. The site has to be built
+  (`npm run build`); the host serves the contents of `dist/`, not the source.
 
 - The hero video never plays. Horizontal mouse movement moves its playhead by
   the same fraction of its length (× 0.8). Seeks are chained through the
