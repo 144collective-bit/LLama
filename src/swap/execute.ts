@@ -1,4 +1,4 @@
-import type { Address, EstimateContractGasParameters, Hash, PublicClient, WalletClient } from 'viem'
+import { encodeFunctionData, type Abi, type Address, type EstimateContractGasParameters, type Hash, type PublicClient, type WalletClient } from 'viem'
 import { erc20Abi, routerAbi, wplsAbi } from './abi'
 import { NETWORK } from './network'
 import type { Quote } from './quote'
@@ -17,6 +17,15 @@ interface ExecuteArgs {
   slippageBps: bigint
   deadlineMinutes: number
   onStep: (step: SwapStep, hash?: Hash) => void
+}
+
+/** The parts of a simulateContract request needed to send it. */
+interface SimulatedCall {
+  address: Address
+  abi: Abi
+  functionName: string
+  args?: readonly unknown[]
+  value?: bigint
 }
 
 async function confirm(publicClient: PublicClient, hash: Hash) {
@@ -48,6 +57,18 @@ export async function executeSwap({
   // costs noticeably more than the estimate suggests.
   const gasFor = async (request: EstimateContractGasParameters) =>
     ((await publicClient.estimateContractGas(request)) * 15n) / 10n
+  // Always send `value`, 0 when no PLS is paid. Approvals and token sales
+  // otherwise leave the field out, which the standard allows but the Rabby
+  // phone app's browser doesn't handle: its confirmation sheet never opens.
+  const send = async (request: SimulatedCall) =>
+    walletClient.sendTransaction({
+      account,
+      chain,
+      to: request.address,
+      data: encodeFunctionData({ abi: request.abi, functionName: request.functionName, args: request.args }),
+      value: request.value ?? 0n,
+      gas: await gasFor(request as EstimateContractGasParameters),
+    })
   const sent = async (hash: Hash, step: SwapStep) => {
     onStep(step, hash)
     await confirm(publicClient, hash)
@@ -63,7 +84,7 @@ export async function executeSwap({
       functionName: 'deposit',
       value: quote.amountIn,
     })
-    return sent(await walletClient.writeContract({ ...request, chain, gas: await gasFor(request) }), 'swap')
+    return sent(await send(request), 'swap')
   }
 
   if (quote.kind === 'unwrap') {
@@ -75,7 +96,7 @@ export async function executeSwap({
       functionName: 'withdraw',
       args: [quote.amountIn],
     })
-    return sent(await walletClient.writeContract({ ...request, chain, gas: await gasFor(request) }), 'swap')
+    return sent(await send(request), 'swap')
   }
 
   const router = quote.router.router
@@ -97,7 +118,7 @@ export async function executeSwap({
         functionName: 'approve',
         args: [router, quote.amountIn],
       })
-      await sent(await walletClient.writeContract({ ...request, chain, gas: await gasFor(request) }), 'approve')
+      await sent(await send(request), 'approve')
     }
   }
 
@@ -114,7 +135,7 @@ export async function executeSwap({
       args: [amountOutMin, path, account, deadline],
       value: quote.amountIn,
     })
-    return sent(await walletClient.writeContract({ ...request, chain, gas: await gasFor(request) }), 'swap')
+    return sent(await send(request), 'swap')
   }
 
   // Paying out the native coin: the path ends at WPLS but the receive token is PLS.
@@ -126,7 +147,7 @@ export async function executeSwap({
       functionName: 'swapExactTokensForETHSupportingFeeOnTransferTokens',
       args: [quote.amountIn, amountOutMin, path, account, deadline],
     })
-    return sent(await walletClient.writeContract({ ...request, chain, gas: await gasFor(request) }), 'swap')
+    return sent(await send(request), 'swap')
   }
 
   const { request } = await publicClient.simulateContract({
@@ -136,5 +157,5 @@ export async function executeSwap({
     functionName: 'swapExactTokensForTokensSupportingFeeOnTransferTokens',
     args: [quote.amountIn, amountOutMin, path, account, deadline],
   })
-  return sent(await walletClient.writeContract({ ...request, chain, gas: await gasFor(request) }), 'swap')
+  return sent(await send(request), 'swap')
 }
