@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navbar } from './components/Navbar'
 import { BuyPage } from './pages/BuyPage'
+import { SwapPage } from './pages/SwapPage'
 import { usePathname } from './router'
 import { Architecture } from './sections/Architecture'
 import { Cinematic } from './sections/Cinematic'
@@ -15,12 +16,13 @@ const ENTRANCE_DELAY_MS = 800
 const TITLES: Record<string, string> = {
   '/': `${TOKEN.name} (${TOKEN.ticker}) — No Drama, Just Llama`,
   '/buy': `How to Buy ${TOKEN.ticker} — ${TOKEN.name}`,
+  '/swap': 'LLamaswap.pro — Swap Preview',
 }
 
 export default function App() {
   const [entranceComplete, setEntranceComplete] = useState(false)
   const pathname = usePathname()
-  const page = pathname === '/buy' ? '/buy' : '/'
+  const page = pathname === '/buy' || pathname === '/swap' ? pathname : '/'
 
   useEffect(() => {
     const timeout = setTimeout(() => setEntranceComplete(true), ENTRANCE_DELAY_MS)
@@ -40,6 +42,8 @@ export default function App() {
       <main>
         {page === '/buy' ? (
           <BuyPage />
+        ) : page === '/swap' ? (
+          <SwapPage />
         ) : (
           <>
             <Hero entranceComplete={entranceComplete} />

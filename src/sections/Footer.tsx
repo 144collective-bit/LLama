@@ -66,6 +66,16 @@ export function Footer() {
               >
                 How to Buy
               </a>
+              <a
+                href="/swap"
+                onClick={(e) => {
+                  e.preventDefault()
+                  navigate('/swap')
+                }}
+                className={linkClass}
+              >
+                LLamaswap preview
+              </a>
               {EXTERNAL_LINKS.map((link) => (
                 <a
                   key={link.label}
