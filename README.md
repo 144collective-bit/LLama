@@ -13,7 +13,7 @@ Site for LLama ($LLAMA), a community meme coin on PulseChain.
 - **Vite** + **React 18** + **TypeScript**
 - **Tailwind CSS 3**: every `fontFamily` key resolves to Space Mono
 - **Framer Motion** for entrance, scroll and hover animation
-- **wagmi + viem** for wallets and PulseX contract calls
+- **wagmi + viem** for PulseX contract calls, **Reown AppKit** for wallet connection
 
 ## Getting started
 
@@ -56,7 +56,7 @@ The X and Telegram links (footer and the Join The Herd section) point at `@Pulse
 ## The swap
 
 The swap page trades for real, straight from the visitor's own wallet
-(MetaMask, Rabby, …) through PulseX's contracts. The site never holds funds.
+through PulseX's contracts. The site never holds funds.
 
 - **Quotes** are live `getAmountsOut` calls to both PulseX routers (V1 and
   V2), direct and via WPLS; the best is used (`src/swap/quote.ts`).
@@ -71,6 +71,27 @@ The swap page trades for real, straight from the visitor's own wallet
 - The gas limit is set to the estimate plus 50%, so a swap can't run out of
   gas. Unused gas is never charged.
 - Trades with price impact of 15% or more are refused.
+
+### Wallets (Reown AppKit)
+
+"Connect wallet" opens Reown AppKit (`src/swap/wagmi.ts`): browser extensions
+are detected automatically (Rabby, MetaMask, Internet Money, Trust, …), and
+WalletConnect covers phones: a QR code on desktop, one-tap links into wallet
+apps on mobile. MetaMask and Trust are pinned at the top. Email/social
+logins, AppKit's own swap/on-ramp/send screens and analytics are switched off.
+
+- **Project ID:** `b630de806fe35c2ba6e6a52d321e0130` (public by design),
+  overridable with `VITE_REOWN_PROJECT_ID`; set it to an empty string to fall
+  back to browser-extension wallets only.
+- **Allowed domains:** WalletConnect only works on domains listed for the
+  project at https://dashboard.reown.com (llamaswap.pro, www.llamaswap.pro,
+  the Vercel address).
+- **Pin more wallets:** add their WalletConnect directory IDs to
+  `FEATURED_WALLETS` in `src/swap/wagmi.ts`.
+- The wallet code is heavy (~520 KB compressed), so the swap page loads it as
+  its own chunk; the token and How to Buy pages never download it.
+- `.npmrc` sets `legacy-peer-deps`: optional add-ons of wagmi pull in
+  libraries whose peer versions clash; nothing we use is affected.
 
 ### Going live: verify, then switch on
 

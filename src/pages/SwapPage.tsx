@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BaseError, formatUnits, parseUnits, UserRejectedRequestError, type Hash } from 'viem'
-import { useAccount, useConnect, useDisconnect, usePublicClient, useSwitchChain, useWalletClient } from 'wagmi'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useAccount, usePublicClient, useSwitchChain, useWalletClient, WagmiProvider } from 'wagmi'
 import { getTokenBalance, getTokenDecimals } from '../swap/balances'
 import { executeSwap, type SwapStep } from '../swap/execute'
 import { formatAmount, sanitizeAmount } from '../swap/format'
@@ -12,6 +13,7 @@ import { SettingsPopover, type SwapSettings } from '../swap/SettingsPopover'
 import { TokenLogo } from '../swap/TokenLogo'
 import { TokenPicker } from '../swap/TokenPicker'
 import { DEFAULT_FROM, DEFAULT_TO, TOKENS, type SwapToken } from '../swap/tokens'
+import { appKitEnabled, useWalletModal, wagmiConfig } from '../swap/wagmi'
 
 type Side = 'from' | 'to'
 
@@ -64,10 +66,9 @@ function DetailRow({ label, children }: { label: string; children: React.ReactNo
   )
 }
 
-export function SwapPage() {
+function Swap() {
   const { address: account, chainId, isConnected } = useAccount()
-  const { connect, connectors, isPending: connecting } = useConnect()
-  const { disconnect } = useDisconnect()
+  const wallet = useWalletModal()
   const { switchChain, isPending: switching } = useSwitchChain()
   const publicClient = usePublicClient({ chainId: swapChain.id })
   const { data: walletClient } = useWalletClient({ chainId: swapChain.id })
@@ -198,16 +199,6 @@ export function SwapPage() {
   const closePicker = useCallback(() => setPicker(null), [])
   const closeSettings = useCallback(() => setSettingsOpen(false), [])
 
-  const onConnect = () => {
-    setWalletNotice('')
-    const injected = connectors[0]
-    if (!injected || typeof window === 'undefined' || !('ethereum' in window)) {
-      setWalletNotice('No browser wallet found. Install MetaMask or Rabby, or open this page in your wallet app.')
-      return
-    }
-    connect({ connector: injected }, { onError: (err) => setWalletNotice(errorMessage(err)) })
-  }
-
   const onSwap = async () => {
     if (!publicClient || !walletClient || !account || !quote) return
     setTx({ status: 'pending', step: quote.kind === 'swap' && from.address ? 'approve' : 'swap' })
@@ -255,7 +246,8 @@ export function SwapPage() {
   let button: { label: string; onClick?: () => void; disabled?: boolean }
   if (!NETWORK.swapsEnabled) button = { label: 'Swaps not enabled yet', disabled: true }
   else if (!from.tradable || !to.tradable) button = { label: `${!from.tradable ? from.symbol : to.symbol} isn't live yet`, disabled: true }
-  else if (!isConnected) button = { label: connecting ? 'Connecting…' : 'Connect wallet', onClick: onConnect, disabled: connecting }
+  else if (!isConnected)
+    button = { label: wallet.connecting ? 'Connecting…' : 'Connect wallet', onClick: wallet.open, disabled: wallet.connecting }
   else if (wrongChain)
     button = {
       label: switching ? 'Switching…' : `Switch to ${swapChain.name}`,
@@ -309,13 +301,13 @@ export function SwapPage() {
               {isConnected && account && (
                 <button
                   type="button"
-                  onClick={() => disconnect()}
-                  title="Disconnect"
+                  onClick={wallet.openAccount}
+                  title={appKitEnabled ? 'Wallet' : 'Disconnect'}
                   className="group flex h-9 items-center gap-1.5 rounded-[10px] px-2 text-[12px] text-white/60 transition-colors hover:bg-white/10 hover:text-white"
                 >
                   <span className={`h-1.5 w-1.5 rounded-full ${wrongChain ? 'bg-amber-300' : 'bg-emerald-400'}`} />
                   <span className="group-hover:hidden">{short(account)}</span>
-                  <span className="hidden group-hover:inline">Disconnect</span>
+                  <span className="hidden group-hover:inline">{appKitEnabled ? 'Wallet' : 'Disconnect'}</span>
                 </button>
               )}
               <button
@@ -471,7 +463,7 @@ export function SwapPage() {
           </button>
 
           <div role="status" className="px-3 text-center text-[12px] leading-relaxed">
-            {walletNotice && <p className="pt-3 text-white/50">{walletNotice}</p>}
+            {(walletNotice || wallet.notice) && <p className="pt-3 text-white/50">{walletNotice || wallet.notice}</p>}
             {tx.status === 'pending' && tx.hash && (
               <p className="pt-3 text-white/50">
                 Waiting for confirmation ·{' '}
@@ -510,5 +502,21 @@ export function SwapPage() {
         onClose={closePicker}
       />
     </section>
+  )
+}
+
+const queryClient = new QueryClient()
+
+/**
+ * The swap with its wallet providers. Loaded as its own chunk (see App.tsx), so
+ * the wallet code, AppKit included, only downloads on the swap page.
+ */
+export default function SwapPage() {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <Swap />
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }
