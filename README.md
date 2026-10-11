@@ -95,9 +95,10 @@ logins, AppKit's own swap/on-ramp/send screens and analytics are switched off.
 
 ### Going live: verify, then switch on
 
-Swaps are **off** until `ADDRESSES_VERIFIED` in `src/swap/network.ts` is set
-to `true`. Before flipping it, check every address on
-https://scan.pulsechain.com:
+Swaps are **on**: `ADDRESSES_VERIFIED` in `src/swap/network.ts` was set to
+`true` on 2026-10-11 after the owner checked the router and factory addresses
+on https://scan.pulsechain.com and the token addresses matched the Piteas list.
+If any address changes, set it back to `false` and re-check:
 
 | What | Where | Address |
 | --- | --- | --- |

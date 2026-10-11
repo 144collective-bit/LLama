@@ -5,8 +5,11 @@ import { PULSECHAIN } from '../token'
  * SAFETY SWITCH. Swaps stay off until every address in this file and in
  * tokens.ts has been checked on the PulseChain explorer
  * (https://scan.pulsechain.com). Flip to true only after that check.
+ *
+ * Verified 2026-10-11: the four PulseX router/factory addresses checked on the
+ * explorer by the site owner; the token addresses match the Piteas token list.
  */
-const ADDRESSES_VERIFIED = false
+const ADDRESSES_VERIFIED = true
 
 export interface DexRouter {
   name: string
