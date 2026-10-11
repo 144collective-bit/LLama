@@ -1,6 +1,16 @@
-import { encodeFunctionData, type Abi, type Address, type EstimateContractGasParameters, type Hash, type PublicClient, type WalletClient } from 'viem'
+import {
+  BaseError,
+  encodeFunctionData,
+  numberToHex,
+  type Abi,
+  type Address,
+  type EstimateContractGasParameters,
+  type Hash,
+  type PublicClient,
+  type WalletClient,
+} from 'viem'
 import { erc20Abi, routerAbi, wplsAbi } from './abi'
-import { NETWORK } from './network'
+import { NETWORK, swapChain } from './network'
 import type { Quote } from './quote'
 import type { SwapToken } from './tokens'
 
@@ -28,6 +38,25 @@ interface SimulatedCall {
   value?: bigint
 }
 
+/**
+ * Puts the wallet on PulseChain before anything is sent, adding the network
+ * first if the wallet doesn't know it yet.
+ */
+async function ensureChain(walletClient: WalletClient) {
+  if ((await walletClient.getChainId()) === swapChain.id) return
+  try {
+    await walletClient.switchChain({ id: swapChain.id })
+  } catch (err) {
+    // 4902 is the standard "add this network first"; some wallets only say so in words.
+    const unknownChain =
+      err instanceof BaseError &&
+      !!err.walk((e) => (e as { code?: unknown }).code === 4902 || /unrecognized chain|unknown chain/i.test((e as Error).message))
+    if (!unknownChain) throw err
+    await walletClient.addChain({ chain: swapChain })
+    if ((await walletClient.getChainId()) !== swapChain.id) await walletClient.switchChain({ id: swapChain.id })
+  }
+}
+
 async function confirm(publicClient: PublicClient, hash: Hash) {
   const receipt = await publicClient.waitForTransactionReceipt({ hash })
   if (receipt.status !== 'success') throw new Error('The transaction reverted on-chain.')
@@ -50,25 +79,34 @@ export async function executeSwap({
   deadlineMinutes,
   onStep,
 }: ExecuteArgs): Promise<Hash> {
-  const chain = walletClient.chain
   // Set the gas limit ourselves (estimate + 50%) rather than trusting every
   // wallet to estimate it: too low a limit makes the swap revert and still
   // costs gas, while unused gas is never charged. A first purchase of a token
   // costs noticeably more than the estimate suggests.
   const gasFor = async (request: EstimateContractGasParameters) =>
     ((await publicClient.estimateContractGas(request)) * 15n) / 10n
-  // Always send `value`, 0 when no PLS is paid. Approvals and token sales
-  // otherwise leave the field out, which the standard allows but the Rabby
-  // phone app's browser doesn't handle: its confirmation sheet never opens.
-  const send = async (request: SimulatedCall) =>
-    walletClient.sendTransaction({
-      account,
-      chain,
-      to: request.address,
-      data: encodeFunctionData({ abi: request.abi, functionName: request.functionName, args: request.args }),
-      value: request.value ?? 0n,
-      gas: await gasFor(request as EstimateContractGasParameters),
+  // Sent to the wallet as written here, with every field filled in:
+  // - `chainId`, so the wallet opens the request on PulseChain instead of
+  //   whichever network it last used (viem leaves it out for browser wallets);
+  // - `value`, 0 when no PLS is paid. Left out, the Rabby phone app's browser
+  //   never opens its confirmation sheet for approvals and token sales.
+  const send = async (request: SimulatedCall): Promise<Hash> => {
+    const gas = await gasFor(request as EstimateContractGasParameters)
+    await ensureChain(walletClient)
+    return walletClient.request({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          from: account,
+          to: request.address,
+          data: encodeFunctionData({ abi: request.abi, functionName: request.functionName, args: request.args }),
+          value: numberToHex(request.value ?? 0n),
+          gas: numberToHex(gas),
+          chainId: numberToHex(swapChain.id),
+        },
+      ],
     })
+  }
   const sent = async (hash: Hash, step: SwapStep) => {
     onStep(step, hash)
     await confirm(publicClient, hash)
