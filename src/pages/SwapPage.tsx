@@ -309,8 +309,8 @@ function Swap() {
             LLamaswap.pro
           </p>
           <h1 className="text-[clamp(28px,6vw,48px)] font-light leading-[1.15] tracking-[-0.02em] text-white">
-            {/* Breaks only between the two phrases when it doesn't fit on one line. */}
-            <span className="inline-block">No fees,</span> <span className="inline-block">no drama.</span>
+            {/* If it has to wrap, "Platform fees" stays together. */}
+            Zero <span className="inline-block">Platform fees</span>
           </h1>
           <p className="mt-4 inline-flex items-center gap-2 rounded-full sm:mt-6 border border-white/15 px-3 py-1 text-[11px] uppercase tracking-[0.15em] text-white/50">
             <span className={`h-1.5 w-1.5 rounded-full ${NETWORK.swapsEnabled ? 'bg-emerald-400' : 'bg-amber-300'}`} />
