@@ -13,7 +13,8 @@ import { SettingsPopover, type SwapSettings } from '../swap/SettingsPopover'
 import { TokenLogo } from '../swap/TokenLogo'
 import { TokenPicker } from '../swap/TokenPicker'
 import { DEFAULT_FROM, DEFAULT_TO, TOKENS, type SwapToken } from '../swap/tokens'
-import { appKitEnabled, useWalletModal, wagmiConfig } from '../swap/wagmi'
+import { useWalletModal, wagmiConfig } from '../swap/wagmi'
+import { NavWalletButton } from '../swap/WalletButton'
 
 type Side = 'from' | 'to'
 
@@ -299,18 +300,6 @@ function Swap() {
           <div className="relative flex items-center justify-between gap-2 px-3 pb-2 pt-2">
             <h2 className="text-[15px] text-white">Swap</h2>
             <div className="flex items-center gap-1">
-              {isConnected && account && (
-                <button
-                  type="button"
-                  onClick={wallet.openAccount}
-                  title={appKitEnabled ? 'Wallet' : 'Disconnect'}
-                  className="group flex h-9 items-center gap-1.5 rounded-[10px] px-2 text-[12px] text-white/60 transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  <span className={`h-1.5 w-1.5 rounded-full ${wrongChain ? 'bg-amber-300' : 'bg-emerald-400'}`} />
-                  <span className="group-hover:hidden">{short(account)}</span>
-                  <span className="hidden group-hover:inline">{appKitEnabled ? 'Wallet' : 'Disconnect'}</span>
-                </button>
-              )}
               <button
                 type="button"
                 aria-label="Swap settings"
@@ -516,6 +505,7 @@ export default function SwapPage() {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
+        <NavWalletButton />
         <Swap />
       </QueryClientProvider>
     </WagmiProvider>

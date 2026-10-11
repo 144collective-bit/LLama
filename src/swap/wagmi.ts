@@ -1,6 +1,6 @@
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { defineChain, type AppKitNetwork } from '@reown/appkit/networks'
-import { createAppKit, useAppKit } from '@reown/appkit/react'
+import { createAppKit, useAppKit, useDisconnect as useAppKitDisconnect } from '@reown/appkit/react'
 import { useState } from 'react'
 import { createConfig, http, useConnect, useDisconnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -85,8 +85,7 @@ if (adapter) {
 
 interface WalletModal {
   open: () => void
-  /** Opens the account view (AppKit) or disconnects (extensions only). */
-  openAccount: () => void
+  disconnect: () => void
   connecting: boolean
   notice: string
 }
@@ -94,7 +93,8 @@ interface WalletModal {
 /** With AppKit: its wallet pop-up (extensions, QR codes, mobile apps). */
 function useAppKitModal(): WalletModal {
   const { open } = useAppKit()
-  return { open: () => void open(), openAccount: () => void open({ view: 'Account' }), connecting: false, notice: '' }
+  const { disconnect } = useAppKitDisconnect()
+  return { open: () => void open(), disconnect: () => void disconnect(), connecting: false, notice: '' }
 }
 
 /** Without a project ID: the browser's injected wallet only. */
@@ -111,7 +111,7 @@ function useInjectedModal(): WalletModal {
       }
       connect({ connector: connectors[0] }, { onError: (err) => setNotice(err.message.split('\n')[0]) })
     },
-    openAccount: () => disconnect(),
+    disconnect: () => disconnect(),
     connecting: isPending,
     notice,
   }

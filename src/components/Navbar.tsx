@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ScrambleText } from './ScrambleText'
 import { SquashHamburger } from './SquashHamburger'
 import { Logo } from './Logo'
-import { ROUTES, navigate, navigateAndScroll } from '../router'
+import { ROUTES, navigate, navigateAndScroll, usePathname } from '../router'
 import { TOKEN } from '../token'
 
 interface NavbarProps {
@@ -76,7 +76,13 @@ function BuyButton({ mobile }: { mobile: boolean }) {
   )
 }
 
+/** The swap page fills these with its wallet button (see swap/WalletButton.tsx). */
+export const WALLET_SLOT_DESKTOP = 'nav-wallet-desktop'
+export const WALLET_SLOT_MOBILE = 'nav-wallet-mobile'
+
 export function Navbar({ entranceComplete }: NavbarProps) {
+  const pathname = usePathname()
+  const onSwapPage = pathname !== ROUTES.token && pathname !== ROUTES.buy
   const [menuOpen, setMenuOpen] = useState(false)
 
   const go = (target: NavTarget) => {
@@ -150,7 +156,10 @@ export function Navbar({ entranceComplete }: NavbarProps) {
           </motion.nav>
         </div>
 
-        <BuyButton mobile={false} />
+        <div className="flex items-center gap-2">
+          <div id={WALLET_SLOT_DESKTOP} className="contents" />
+          <BuyButton mobile={false} />
+        </div>
       </div>
 
       {/* Mobile */}
@@ -218,7 +227,9 @@ export function Navbar({ entranceComplete }: NavbarProps) {
           </motion.nav>
         </div>
 
-        <BuyButton mobile />
+        <div id={WALLET_SLOT_MOBILE} className="contents" />
+        {/* No room for both on a phone: on the swap page the wallet button takes this spot. */}
+        {!onSwapPage && <BuyButton mobile />}
       </div>
     </motion.header>
   )
