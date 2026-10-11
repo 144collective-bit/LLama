@@ -79,7 +79,9 @@ are detected automatically (Rabby, MetaMask, Internet Money, Trust, …), and
 WalletConnect covers phones: a QR code on desktop, one-tap links into wallet
 apps on mobile. The menu lists MetaMask, Trust Wallet, OKX Wallet and
 Internet Money, plus any wallet already installed in the visitor's browser
-(e.g. Rabby); AppKit's "All wallets" list is hidden. Email/social logins,
+(e.g. Rabby); AppKit's "All wallets" list and its generic desktop
+"WalletConnect · QR code" row are hidden (the listed wallets still show
+their own QR code). Email/social logins,
 AppKit's own swap/on-ramp/send screens and analytics are switched off.
 
 - **Project ID:** `b630de806fe35c2ba6e6a52d321e0130` (public by design),

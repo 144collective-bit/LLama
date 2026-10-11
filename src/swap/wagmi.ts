@@ -1,6 +1,7 @@
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { defineChain, type AppKitNetwork } from '@reown/appkit/networks'
 import { createAppKit, useAppKit, useDisconnect as useAppKitDisconnect } from '@reown/appkit/react'
+import { ConnectorUtil } from '@reown/appkit-controllers'
 import { useState } from 'react'
 import { createConfig, http, useConnect, useDisconnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -91,6 +92,14 @@ if (adapter) {
     },
   })
 }
+
+/**
+ * AppKit always lists a generic "WalletConnect · QR code" row on desktop and
+ * has no option to turn it off. Drop that one row from the menu: WalletConnect
+ * itself stays on, so the listed phone wallets still open their own QR code.
+ */
+const listConnectors = ConnectorUtil.connectorList.bind(ConnectorUtil)
+ConnectorUtil.connectorList = () => listConnectors().filter((item) => item.subtype !== 'walletConnect')
 
 interface WalletModal {
   open: () => void
