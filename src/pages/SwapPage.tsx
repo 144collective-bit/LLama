@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BaseError, formatUnits, parseUnits, UserRejectedRequestError, type Hash } from 'viem'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -96,6 +96,24 @@ function Swap() {
 
   const wrongChain = isConnected && chainId !== swapChain.id
   const busy = tx.status === 'pending'
+
+  // Put the wallet on PulseChain as soon as it connects, or as soon as the
+  // page opens already connected (as in a wallet app's own browser), instead
+  // of waiting for a tap. Asked once per address per visit, so declining in
+  // the wallet doesn't bring the prompt straight back; the button still offers it.
+  const autoSwitched = useRef<string | null>(null)
+  useEffect(() => {
+    if (!wrongChain || !account || autoSwitched.current === account) return
+    autoSwitched.current = account
+    switchChain(
+      { chainId: swapChain.id },
+      {
+        onError: (err) => {
+          if (!(err instanceof BaseError && err.walk((e) => e instanceof UserRejectedRequestError))) setWalletNotice(errorMessage(err))
+        },
+      },
+    )
+  }, [wrongChain, account, switchChain])
 
   // Verify the PulseX contracts once, before anything is quoted.
   useEffect(() => {
