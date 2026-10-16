@@ -29,14 +29,3 @@ export const PULSECHAIN = {
   bridgeUrl: 'https://bridge.pulsechain.com',
   dexUrl: 'https://app.pulsex.com',
 }
-
-/** PulseX swap screen, preselecting $LLAMA once the contract is live. */
-export function pulsexSwapUrl() {
-  const base = `${PULSECHAIN.dexUrl}/swap`
-  return TOKEN.live ? `${base}?outputCurrency=${TOKEN.contractAddress}` : base
-}
-
-/** The token's page on the PulseChain explorer, once the contract is live. */
-export function explorerTokenUrl() {
-  return TOKEN.live ? `${PULSECHAIN.explorerUrl}/token/${TOKEN.contractAddress}` : ''
-}

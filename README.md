@@ -33,7 +33,7 @@ npm run preview  # serve the production build on http://localhost:5181
 | `src/videos.ts` | CloudFront URL of the footer video |
 | `src/components/Navbar.tsx` | Fixed navbar: logo and wallet button, desktop and mobile variants |
 | `src/components/Logo.tsx` | Four-fold rotational SVG mark |
-| `src/sections/Footer.tsx` | Footer: video, socials, PulseX link, disclaimer |
+| `src/sections/Footer.tsx` | Footer: video, short description, PulseX/explorer/bridge links, disclaimer |
 
 ## Before launch
 
