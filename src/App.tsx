@@ -1,14 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Navbar } from './components/Navbar'
-import { BuyPage } from './pages/BuyPage'
-import { ROUTES, usePathname } from './router'
-import { Architecture } from './sections/Architecture'
-import { Cinematic } from './sections/Cinematic'
+import { ROUTES } from './router'
 import { Footer } from './sections/Footer'
-import { Hero } from './sections/Hero'
-import { Metrics } from './sections/Metrics'
-import { Technology } from './sections/Technology'
-import { TOKEN } from './token'
 
 const ENTRANCE_DELAY_MS = 800
 
@@ -28,26 +21,10 @@ function SwapFallback() {
   )
 }
 
-type Page = 'swap' | 'token' | 'buy'
-
-const TITLES: Record<Page, string> = {
-  swap: 'LLamaswap.pro — Swap Preview',
-  token: `${TOKEN.name} (${TOKEN.ticker}) — No Drama, Just Llama`,
-  buy: `How to Buy ${TOKEN.ticker} — ${TOKEN.name}`,
-}
-
-/** `/swap` stays as an alias of the home page so earlier links keep working. */
-function pageFor(pathname: string): Page {
-  const path = pathname.replace(/\/+$/, '') || '/'
-  if (path === ROUTES.token) return 'token'
-  if (path === ROUTES.buy) return 'buy'
-  return 'swap'
-}
+const TITLE = 'LLamaswap.pro — Swap Preview'
 
 export default function App() {
   const [entranceComplete, setEntranceComplete] = useState(false)
-  const pathname = usePathname()
-  const page = pageFor(pathname)
 
   useEffect(() => {
     const timeout = setTimeout(() => setEntranceComplete(true), ENTRANCE_DELAY_MS)
@@ -55,8 +32,12 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    document.title = TITLES[page]
-  }, [page])
+    document.title = TITLE
+    // The exchange is the only page: old links (/token, /buy, /swap, …) land on it at /.
+    if (window.location.pathname !== ROUTES.swap) {
+      window.history.replaceState(null, '', ROUTES.swap + window.location.search + window.location.hash)
+    }
+  }, [])
 
   return (
     <div
@@ -65,21 +46,9 @@ export default function App() {
     >
       <Navbar entranceComplete={entranceComplete} />
       <main>
-        {page === 'buy' ? (
-          <BuyPage />
-        ) : page === 'swap' ? (
-          <Suspense fallback={<SwapFallback />}>
-            <SwapPage />
-          </Suspense>
-        ) : (
-          <>
-            <Hero entranceComplete={entranceComplete} />
-            <Cinematic />
-            <Metrics />
-            <Technology />
-            <Architecture />
-          </>
-        )}
+        <Suspense fallback={<SwapFallback />}>
+          <SwapPage />
+        </Suspense>
       </main>
       <Footer />
     </div>

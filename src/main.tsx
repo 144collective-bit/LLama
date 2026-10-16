@@ -7,7 +7,6 @@ import '@fontsource/space-mono/400.css'
 import '@fontsource/space-mono/700.css'
 import '@fontsource/space-mono/400-italic.css'
 import '@fontsource/space-mono/700-italic.css'
-import '@fontsource/anton-sc/400.css'
 import 'bootstrap-icons/font/bootstrap-icons.min.css'
 import './index.css'
 

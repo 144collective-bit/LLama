@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import { BackgroundVideo } from '../components/BackgroundVideo'
 import { Logo } from '../components/Logo'
-import { ROUTES, navigate } from '../router'
 import { TOKEN, explorerTokenUrl, pulsexSwapUrl } from '../token'
 import { VIDEOS } from '../videos'
 
@@ -14,12 +13,6 @@ const EXTERNAL_LINKS = [
   { label: 'PulseX', href: pulsexSwapUrl() },
   { label: 'Explorer', href: explorerTokenUrl() },
 ].filter((link) => link.href)
-
-const PAGE_LINKS = [
-  { label: 'Swap', path: ROUTES.swap },
-  { label: 'Token', path: ROUTES.token },
-  { label: 'How to Buy', path: ROUTES.buy },
-]
 
 const linkClass = 'text-white/50 transition-colors hover:text-white'
 
@@ -62,19 +55,6 @@ export function Footer() {
               <span className="ml-2 text-[13px] text-white/40">{TOKEN.social.handle}</span>
             </div>
             <nav className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[13px]">
-              {PAGE_LINKS.map((link) => (
-                <a
-                  key={link.path}
-                  href={link.path}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    navigate(link.path)
-                  }}
-                  className={linkClass}
-                >
-                  {link.label}
-                </a>
-              ))}
               {EXTERNAL_LINKS.map((link) => (
                 <a
                   key={link.label}

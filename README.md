@@ -2,11 +2,8 @@
 
 Site for LLama ($LLAMA), a community meme coin on PulseChain.
 
-| URL | Page |
-| --- | --- |
-| `/` | LLamaswap.pro swap (the opening page; `/swap` also works) |
-| `/token` | The $LLAMA landing page: hero, lore, tokenomics, socials, roadmap |
-| `/buy` | How to Buy |
+The site is a single page: the LLamaswap.pro exchange at `/`. Any other path
+(including the old `/token`, `/buy` and `/swap` links) lands on it.
 
 ## Stack
 
@@ -29,20 +26,14 @@ npm run preview  # serve the production build on http://localhost:5181
 | Path | Purpose |
 | --- | --- |
 | `src/token.ts` | **Coin details: contract address, tax, socials, PulseChain settings** |
-| `src/App.tsx` | Entrance timer, page switch and section order |
-| `src/router.ts` | Minimal pushState routing; `ROUTES` lists the page URLs |
-| `src/pages/BuyPage.tsx` | How to Buy: contract card, four steps, network settings |
+| `src/App.tsx` | Entrance timer, navbar, the swap page and footer |
+| `src/router.ts` | `ROUTES`: the one page, `/` |
 | `src/pages/SwapPage.tsx` | The LLamaswap.pro swap at `/` |
 | `src/swap/` | Swap network config, token list, router checks, quotes, execution, picker, settings |
-| `src/videos.ts` | CloudFront URLs for the five background videos |
-| `src/components/Navbar.tsx` | Fixed navbar: expanding menu pill, desktop and mobile variants |
-| `src/components/ScrambleIn.tsx` | Left-to-right scramble reveal used by the hero headings |
-| `src/components/ScrambleText.tsx` | Hover scramble for nav links and the Buy button |
-| `src/components/SquashHamburger.tsx` | Three-bar hamburger that springs into an X |
+| `src/videos.ts` | CloudFront URL of the footer video |
+| `src/components/Navbar.tsx` | Fixed navbar: logo and wallet button, desktop and mobile variants |
 | `src/components/Logo.tsx` | Four-fold rotational SVG mark |
-| `src/sections/Hero.tsx` | Mouse-scrubbed hero video and headline |
-| `src/sections/Cinematic.tsx` | Scroll-driven 3D text over video |
-| `src/sections/*.tsx` | Tokenomics, How to Buy steps, Roadmap, Footer |
+| `src/sections/Footer.tsx` | Footer: video, socials, PulseX link, disclaimer |
 
 ## Before launch
 
@@ -92,7 +83,7 @@ AppKit's own swap/on-ramp/send screens and analytics are switched off.
 - **Change the listed wallets:** edit the WalletConnect directory IDs in
   `FEATURED_WALLETS` in `src/swap/wagmi.ts`. AppKit shows at most four.
 - The wallet code is heavy (~520 KB compressed), so the swap page loads it as
-  its own chunk; the token and How to Buy pages never download it.
+  its own chunk, loaded after the navbar and footer.
 - `.npmrc` sets `legacy-peer-deps`: optional add-ons of wagmi pull in
   libraries whose peer versions clash; nothing we use is affected.
 
@@ -168,17 +159,11 @@ token addresses, `swapsEnabled`). Leave it unset for the real site.
 
 ## Notes
 
-- `public/.htaccess` sends every path to `index.html` so `/token` and `/buy`
-  load on a refresh or direct link (Hostinger runs LiteSpeed, which reads it). The site has to be built
+- `public/.htaccess` sends every path to `index.html`, so old or mistyped links
+  still open the exchange (Hostinger runs LiteSpeed, which reads it). The site has to be built
   (`npm run build`); the host serves the contents of `dist/`, not the source.
 - Hostinger deploys from the `hostinger` branch, which holds only the built
   site. `.github/workflows/hostinger.yml` rebuilds it on every push to `main`
   (Actions tab → "Build for Hostinger"); then redeploy in hPanel → Git.
   Never edit the `hostinger` branch by hand.
 
-- The hero video never plays. Horizontal mouse movement moves its playhead by
-  the same fraction of its length (× 0.8). Seeks are chained through the
-  `seeked` event, so only one is in flight and each lands on the latest target.
-  Touch devices have no mouse movement, so on phones the hero shows the first frame.
-- Full-height sections use `h-screen` with `supports-[height:100dvh]:h-[100dvh]`.
-  A bare `h-[100dvh]` would lose to `h-screen`, which Tailwind emits later.
